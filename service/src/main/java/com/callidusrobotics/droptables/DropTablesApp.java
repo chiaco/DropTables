@@ -21,11 +21,12 @@ import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 
-import java.net.UnknownHostException;
+import java.io.IOException;
 
 import com.callidusrobotics.droptables.configuration.DropTablesConfig;
 import com.callidusrobotics.droptables.health.MongoHealthCheck;
 import com.callidusrobotics.droptables.resource.DocumentsResource;
+import com.callidusrobotics.droptables.resource.GroovyResource;
 
 public class DropTablesApp extends Application<DropTablesConfig> {
 
@@ -37,9 +38,10 @@ public class DropTablesApp extends Application<DropTablesConfig> {
   public void initialize(Bootstrap<DropTablesConfig> bootstrap) {}
 
   @Override
-  public void run(DropTablesConfig config, Environment environment) throws UnknownHostException {
+  public void run(DropTablesConfig config, Environment environment) throws IOException {
     environment.healthChecks().register("mongo", new MongoHealthCheck(config, environment));
 
     environment.jersey().register(new DocumentsResource(config, environment));
+    environment.jersey().register(new GroovyResource(config, environment));
   }
 }

@@ -1,4 +1,5 @@
 {
+  "scriptsCacheDir": "/tmp/droptables/groovy/",
   "mongo": {
     "username": "",
     "password": "",

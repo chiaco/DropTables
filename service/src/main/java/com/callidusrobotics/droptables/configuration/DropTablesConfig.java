@@ -17,10 +17,14 @@
 
 package com.callidusrobotics.droptables.configuration;
 
+import java.io.File;
+
 import io.dropwizard.Configuration;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotEmpty;
 
 import com.callidusrobotics.droptables.factory.MongoFactory;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -28,9 +32,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class DropTablesConfig extends Configuration {
 
+  @NotEmpty
+  private String scriptsCacheDir = "/tmp/droptables/groovy/";
+
   @Valid
   @NotNull
   private MongoFactory mongoFactory;
+
+  @JsonProperty
+  public String getScriptsCacheDir() {
+    return scriptsCacheDir;
+  }
+
+  @JsonProperty
+  public void setScriptsCacheDir(String scriptsCacheDir) {
+    new File(scriptsCacheDir).mkdirs();
+
+    this.scriptsCacheDir = scriptsCacheDir;
+  }
 
   @JsonCreator
   public DropTablesConfig(@JsonProperty("mongo") MongoFactory mongoFactory) {
