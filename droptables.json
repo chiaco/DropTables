@@ -1,0 +1,36 @@
+{
+  "mongo": {
+    "username": "",
+    "password": "",
+    "dbName": "test",
+    "host": "localhost",
+    "port": 27017
+  },
+  "server": {
+    "applicationConnectors": [
+      {
+        "type": "http",
+        "port" : 9000
+      }
+    ],
+    "adminConnectors": [
+      {
+        "type": "http",
+        "port": 9001
+      }
+    ]
+  },
+  "logging": {
+    "appenders": [
+      {
+        "type": "console"
+      }
+    ],
+    "level": "INFO",
+    "loggers": {
+      "com": {
+        "callidusrobotics": "DEBUG"
+      }
+    }
+  }
+}
