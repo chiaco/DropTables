@@ -24,6 +24,7 @@ import io.dropwizard.setup.Environment;
 import java.io.IOException;
 
 import com.callidusrobotics.droptables.configuration.DropTablesConfig;
+import com.callidusrobotics.droptables.exception.HtmlBodyErrorWriter;
 import com.callidusrobotics.droptables.health.MongoHealthCheck;
 import com.callidusrobotics.droptables.resource.DocumentsResource;
 import com.callidusrobotics.droptables.resource.GroovyResource;
@@ -46,8 +47,13 @@ public class DropTablesApp extends Application<DropTablesConfig> {
       mapper.enable(SerializationFeature.INDENT_OUTPUT);
     }
 
+    // Error Writers
+    environment.jersey().register(new HtmlBodyErrorWriter());
+
+    // Health checks
     environment.healthChecks().register("mongo", new MongoHealthCheck(config, environment));
 
+    // Resources
     environment.jersey().register(new DocumentsResource(config, environment));
     environment.jersey().register(new GroovyResource(config, environment));
   }

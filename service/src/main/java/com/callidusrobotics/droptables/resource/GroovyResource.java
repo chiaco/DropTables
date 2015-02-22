@@ -94,7 +94,6 @@ public class GroovyResource {
     return dao.deleteById(id);
   }
 
-  // FIXME: Need to create a mapper to return error messages as TEXT/HTML when we throw WebApplicationException
   @Produces(MediaType.TEXT_HTML)
   @Path("/{id}/results/")
   @POST
