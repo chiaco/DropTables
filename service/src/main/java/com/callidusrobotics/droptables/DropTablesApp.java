@@ -25,6 +25,7 @@ import java.io.IOException;
 
 import com.callidusrobotics.droptables.configuration.DropTablesConfig;
 import com.callidusrobotics.droptables.exception.HtmlBodyErrorWriter;
+import com.callidusrobotics.droptables.health.FileSystemHealthCheck;
 import com.callidusrobotics.droptables.health.MongoHealthCheck;
 import com.callidusrobotics.droptables.resource.DocumentsResource;
 import com.callidusrobotics.droptables.resource.GroovyResource;
@@ -52,6 +53,7 @@ public class DropTablesApp extends Application<DropTablesConfig> {
 
     // Health checks
     environment.healthChecks().register("mongo", new MongoHealthCheck(config, environment));
+    environment.healthChecks().register("fileSystem", new FileSystemHealthCheck(config, environment));
 
     // Resources
     environment.jersey().register(new DocumentsResource(config, environment));
