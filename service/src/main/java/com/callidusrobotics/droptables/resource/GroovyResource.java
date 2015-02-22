@@ -47,6 +47,8 @@ import com.callidusrobotics.droptables.configuration.DropTablesConfig;
 import com.callidusrobotics.droptables.model.DocumentDao;
 import com.callidusrobotics.droptables.model.GroovyDao;
 import com.callidusrobotics.droptables.model.GroovyScript;
+import com.google.common.collect.ImmutableMap;
+import com.mongodb.WriteResult;
 
 @Path("/scripts/")
 @Produces(MediaType.APPLICATION_JSON)
@@ -76,27 +78,27 @@ public class GroovyResource {
   }
 
   @POST
-  public String upsert(@Valid GroovyScript entity) {
-    return dao.save(entity).getId().toString() + "\n";
+  public Map<String, String> upsert(@Valid GroovyScript entity) {
+    return ImmutableMap.of(DocumentDao.DOC_ID, dao.save(entity).getId().toString());
   }
 
   @Path("/{id}/")
   @GET
-  public GroovyScript fetch(@PathParam("id") ObjectId id) {
+  public GroovyScript fetch(@Valid @PathParam("id") ObjectId id) {
     return dao.get(id);
   }
 
   @Path("/{id}/")
   @DELETE
-  public boolean delete(@PathParam("id") ObjectId id) {
-    return dao.deleteById(id) != null;
+  public WriteResult delete(@Valid @PathParam("id") ObjectId id) {
+    return dao.deleteById(id);
   }
 
   // FIXME: Need to create a mapper to return error messages as TEXT/HTML when we throw WebApplicationException
   @Produces(MediaType.TEXT_HTML)
   @Path("/{id}/results/")
   @POST
-  public String execute(@PathParam("id") ObjectId id, @Valid Map<String, String> scriptBindings) {
+  public String execute(@Valid @PathParam("id") ObjectId id, @Valid Map<String, String> scriptBindings) {
     // Fetch the script from the database
     GroovyScript script = dao.get(id);
     if (!script.write(scriptsCacheDir)) {

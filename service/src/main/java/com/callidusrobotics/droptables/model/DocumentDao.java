@@ -54,14 +54,10 @@ public class DocumentDao {
    * @param id The document ID
    * @return The document, nullable
    */
-  public DBObject getDocument(String collectionName, String id) {
+  public DBObject getDocument(String collectionName, ObjectId id) {
     DBCollection collection = getCollection(collectionName);
     DBCursor cursor;
-    try {
-      cursor = collection.find(makeRef(id));
-    } catch (IllegalArgumentException e) {
-      return null;
-    }
+    cursor = collection.find(makeRef(id.toString()));
 
     List<DBObject> results = getDocuments(cursor);
     if (results.size() > 0) {
@@ -78,16 +74,9 @@ public class DocumentDao {
    * @param id The document ID
    * @return True if the document was deleted, false otherwise
    */
-  public boolean deleteDocument(String collectionName, String id) {
+  public WriteResult deleteDocument(String collectionName, ObjectId id) {
     DBCollection collection = getCollection(collectionName);
-    WriteResult result;
-    try {
-      result = collection.remove(makeRef(id));
-    } catch (IllegalArgumentException e) {
-      return false;
-    }
-
-    return result.getN() > 0;
+    return collection.remove(makeRef(id));
   }
 
   /**
@@ -97,13 +86,13 @@ public class DocumentDao {
    *
    * @param collectionName The collection to upsert to
    * @param document The document to upsert
-   * @return True if the document was inserted/updated, false otherwise
+   * @return ObjectId of the upserted document
    */
-  public boolean upsertDocument(String collectionName, DBObject document) {
+  public ObjectId upsertDocument(String collectionName, DBObject document) {
     DBCollection collection = getCollection(collectionName);
-    WriteResult result = collection.insert(document);
+    collection.insert(document);
 
-    return result.getN() > 0;
+    return (ObjectId) document.get(DOC_ID);
   }
 
   /**
@@ -197,8 +186,16 @@ public class DocumentDao {
   }
 
   protected static DBObject makeRef(String id) {
+    try {
+      return makeRef(new ObjectId(id));
+    } catch (IllegalArgumentException e) {
+      return null;
+    }
+  }
+
+  protected static DBObject makeRef(ObjectId id) {
     BasicDBObject document = new BasicDBObject();
-    document.put(DOC_ID, new ObjectId(id));
+    document.put(DOC_ID, id);
 
     return document;
   }

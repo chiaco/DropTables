@@ -46,7 +46,7 @@ script.json
 ```
 curl -X POST -H "Content-Type: application/json" -d @script.json "http://localhost:9000/scripts/"
 
-54e8f1dbd9a93c9b467d5380
+{"_id":"54e8f1dbd9a93c9b467d5380"}
 ```
 
 ## Execute a Groovy script

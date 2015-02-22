@@ -22,6 +22,7 @@ import io.dropwizard.setup.Environment;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -35,10 +36,14 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.bson.types.ObjectId;
+
 import com.callidusrobotics.droptables.configuration.DropTablesConfig;
 import com.callidusrobotics.droptables.model.DocumentDao;
+import com.google.common.collect.ImmutableMap;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.mongodb.WriteResult;
 
 @Path("/collections/")
 @Produces(MediaType.APPLICATION_JSON)
@@ -63,13 +68,13 @@ public class DocumentsResource {
 
   @Path("/{collection}/documents/")
   @POST
-  public boolean upsert(@PathParam("collection") String collection, @Valid BasicDBObject document) {
-    return dao.upsertDocument(collection, document);
+  public Map<String, String> upsert(@PathParam("collection") String collection, @Valid BasicDBObject document) {
+    return ImmutableMap.of(DocumentDao.DOC_ID, dao.upsertDocument(collection, document).toString());
   }
 
   @Path("/{collection}/documents/{id}/")
   @GET
-  public DBObject fetch(@PathParam("collection") String collection, @PathParam("id") String id) {
+  public DBObject fetch(@PathParam("collection") String collection, @Valid @PathParam("id") ObjectId id) {
     DBObject result = dao.getDocument(collection, id);
     if (result == null) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
@@ -80,7 +85,7 @@ public class DocumentsResource {
 
   @Path("/{collection}/documents/{id}/")
   @DELETE
-  public boolean delete(@PathParam("collection") String collection, @PathParam("id") String id) {
+  public WriteResult delete(@PathParam("collection") String collection, @Valid @PathParam("id") ObjectId id) {
     return dao.deleteDocument(collection, id);
   }
 }
