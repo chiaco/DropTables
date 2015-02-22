@@ -35,6 +35,8 @@ public class DropTablesConfig extends Configuration {
   @NotEmpty
   private String scriptsCacheDir = "/tmp/droptables/groovy/";
 
+  private boolean prettyPrint = true;
+
   @Valid
   @NotNull
   private MongoFactory mongoFactory;
@@ -49,6 +51,16 @@ public class DropTablesConfig extends Configuration {
     new File(scriptsCacheDir).mkdirs();
 
     this.scriptsCacheDir = scriptsCacheDir;
+  }
+
+  @JsonProperty
+  public boolean isPrettyPrint() {
+    return prettyPrint;
+  }
+
+  @JsonProperty
+  public void setPrettyPrint(boolean prettyPrint) {
+    this.prettyPrint = prettyPrint;
   }
 
   @JsonCreator

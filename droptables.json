@@ -1,5 +1,6 @@
 {
   "scriptsCacheDir": "/tmp/droptables/groovy/",
+  "prettyPrint": true,
   "mongo": {
     "username": "",
     "password": "",

@@ -27,6 +27,8 @@ import com.callidusrobotics.droptables.configuration.DropTablesConfig;
 import com.callidusrobotics.droptables.health.MongoHealthCheck;
 import com.callidusrobotics.droptables.resource.DocumentsResource;
 import com.callidusrobotics.droptables.resource.GroovyResource;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class DropTablesApp extends Application<DropTablesConfig> {
 
@@ -39,6 +41,11 @@ public class DropTablesApp extends Application<DropTablesConfig> {
 
   @Override
   public void run(DropTablesConfig config, Environment environment) throws IOException {
+    if (config.isPrettyPrint()) {
+      ObjectMapper mapper = environment.getObjectMapper();
+      mapper.enable(SerializationFeature.INDENT_OUTPUT);
+    }
+
     environment.healthChecks().register("mongo", new MongoHealthCheck(config, environment));
 
     environment.jersey().register(new DocumentsResource(config, environment));
