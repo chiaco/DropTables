@@ -22,12 +22,14 @@ import io.dropwizard.setup.Environment;
 
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
 
@@ -37,14 +39,20 @@ import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 
 public class MongoFactory {
+  private enum LockFlags {
+    MONGO_CLIENT,
+    DATASTORE
+  }
+
+  private transient final Lock[] locks = new Lock[LockFlags.values().length];
   private transient final Morphia morphia = new Morphia();
   private transient MongoClient mongoClient;
   private transient Datastore datastore;
 
-  @NotNull
+  @NotEmpty
   private String dbName;
 
-  @NotNull
+  @NotEmpty
   private String host;
 
   @Min(1)
@@ -53,6 +61,12 @@ public class MongoFactory {
 
   private String username;
   private String password;
+
+  public MongoFactory() {
+    for (int i = 0; i < locks.length; i++) {
+      locks[i] = new ReentrantLock();
+    }
+  }
 
   @JsonProperty
   public String getDbName() {
@@ -108,34 +122,54 @@ public class MongoFactory {
     return morphia;
   }
 
-  public synchronized MongoClient buildClient(Environment env) throws UnknownHostException {
+  public MongoClient buildClient(Environment env) throws UnknownHostException {
     if (mongoClient != null) {
       return mongoClient;
     }
 
-    if (StringUtils.isBlank(username)) {
-      mongoClient = new MongoClient(new ServerAddress(host, port));
-    } else {
-      char[] passwordChars = password == null ? new char[0] : password.toCharArray();
-      mongoClient = new MongoClient(new ServerAddress(host, port), Arrays.asList(MongoCredential.createCredential(username, dbName, passwordChars)));
-    }
+    Lock lock = locks[LockFlags.MONGO_CLIENT.ordinal()];
+    lock.lock();
 
-    env.lifecycle().manage(new Managed() {
-      @Override
-      public void start() throws Exception {}
+    try {
+      if (mongoClient == null) {
+        if (StringUtils.isBlank(username)) {
+          mongoClient = new MongoClient(new ServerAddress(host, port));
+        } else {
+          char[] passwordChars = password == null ? new char[0] : password.toCharArray();
+          mongoClient = new MongoClient(new ServerAddress(host, port), Arrays.asList(MongoCredential.createCredential(username, dbName, passwordChars)));
+        }
 
-      @Override
-      public void stop() throws Exception {
-        mongoClient.close();
+        env.lifecycle().manage(new Managed() {
+          @Override
+          public void start() throws Exception {}
+
+          @Override
+          public void stop() throws Exception {
+            mongoClient.close();
+          }
+        });
       }
-    });
+    } finally {
+      lock.unlock();
+    }
 
     return mongoClient;
   }
 
-  public synchronized Datastore buildDatastore(Environment env) throws UnknownHostException {
-    if (datastore == null) {
-      datastore = morphia.createDatastore(buildClient(env), dbName);
+  public Datastore buildDatastore(Environment env) throws UnknownHostException {
+    if (datastore != null) {
+      return datastore;
+    }
+
+    Lock lock = locks[LockFlags.DATASTORE.ordinal()];
+    lock.lock();
+
+    try {
+      if (datastore == null) {
+        datastore = morphia.createDatastore(buildClient(env), dbName);
+      }
+    } finally {
+      lock.unlock();
     }
 
     return datastore;

@@ -25,12 +25,15 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.callidusrobotics.droptables.factory.MongoFactory;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class DropTablesConfig extends Configuration {
+  private static final Logger LOGGER = LoggerFactory.getLogger(DropTablesConfig.class);
 
   @NotEmpty
   private String scriptsCacheDir = "/tmp/droptables/groovy/";
@@ -48,7 +51,9 @@ public class DropTablesConfig extends Configuration {
 
   @JsonProperty
   public void setScriptsCacheDir(String scriptsCacheDir) {
-    new File(scriptsCacheDir).mkdirs();
+    if (! new File(scriptsCacheDir).mkdirs()) {
+      LOGGER.error("Unable to create directory: " + scriptsCacheDir);
+    }
 
     this.scriptsCacheDir = scriptsCacheDir;
   }

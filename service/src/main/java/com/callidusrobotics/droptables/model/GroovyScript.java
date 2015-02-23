@@ -61,11 +61,19 @@ public class GroovyScript {
   }
 
   public Date getCreated() {
-    return created;
+    if (created == null) {
+      return null;
+    }
+
+    return new Date(created.getTime());
   }
 
   public Date getModified() {
-    return modified;
+    if (modified == null) {
+      return null;
+    }
+
+    return new Date(modified.getTime());
   }
 
   public String getName() {

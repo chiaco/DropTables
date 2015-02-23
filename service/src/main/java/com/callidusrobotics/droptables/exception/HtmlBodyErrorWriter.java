@@ -31,6 +31,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.io.Charsets;
+
 @Provider
 @Produces(MediaType.TEXT_HTML)
 public class HtmlBodyErrorWriter implements MessageBodyWriter<ErrorMessage> {
@@ -42,12 +44,12 @@ public class HtmlBodyErrorWriter implements MessageBodyWriter<ErrorMessage> {
 
   @Override
   public long getSize(ErrorMessage t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-    return getData(t).getBytes().length;
+    return getData(t).getBytes(Charsets.UTF_8).length;
   }
 
   @Override
   public void writeTo(ErrorMessage t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
-    entityStream.write(getData(t).getBytes());
+    entityStream.write(getData(t).getBytes(Charsets.UTF_8));
   }
 
   protected String getData(ErrorMessage t) {
