@@ -28,20 +28,27 @@ import com.mongodb.MongoException;
 
 public class MongoHealthCheck extends HealthCheck {
 
-  private final MongoClient mongoClient;
+  private final MongoClient rwClient, roClient;
 
   public MongoHealthCheck(DropTablesConfig config, Environment environment) throws UnknownHostException {
     super();
 
-    mongoClient = config.getMongoFactory().buildClient(environment);
+    rwClient = config.getMongoFactory().buildReadWriteClient(environment);
+    roClient = config.getMongoFactory().buildReadOnlyClient(environment);
   }
 
   @Override
   protected Result check() throws Exception {
     try {
-      mongoClient.getDatabaseNames();
+      rwClient.getDatabaseNames();
     } catch (MongoException e) {
-      return Result.unhealthy(e.getMessage());
+      return Result.unhealthy("read-write client: " + e.getMessage());
+    }
+
+    try {
+      roClient.getDatabaseNames();
+    } catch (MongoException e) {
+      return Result.unhealthy("read-only client: " + e.getMessage());
     }
 
     return Result.healthy();

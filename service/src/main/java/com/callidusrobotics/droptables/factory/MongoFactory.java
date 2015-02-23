@@ -25,14 +25,17 @@ import java.util.Arrays;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
 
+import com.callidusrobotics.droptables.configuration.LoginInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoCredential;
@@ -46,8 +49,8 @@ public class MongoFactory {
 
   private transient final Lock[] locks = new Lock[LockFlags.values().length];
   private transient final Morphia morphia = new Morphia();
-  private transient MongoClient mongoClient;
-  private transient Datastore datastore;
+  private transient MongoClient rwClient, roClient;
+  private transient Datastore rwDatastore, roDatastore;
 
   @NotEmpty
   private String dbName;
@@ -59,8 +62,14 @@ public class MongoFactory {
   @Max(65535)
   private int port;
 
-  private String username;
-  private String password;
+  // A Mongo user with read-write access is required
+  @Valid
+  @NotNull
+  LoginInfo rwUser;
+
+  // A Mongo user with read-only access is optional
+  @Valid
+  LoginInfo roUser;
 
   public MongoFactory() {
     for (int i = 0; i < locks.length; i++) {
@@ -98,80 +107,123 @@ public class MongoFactory {
     this.port = port;
   }
 
-  @JsonProperty
-  public String getUsername() {
-    return username;
+  @JsonProperty("serviceUser")
+  public void setRwUser(LoginInfo rwUser) {
+    this.rwUser = rwUser;
   }
 
-  @JsonProperty
-  public void setUsername(String username) {
-    this.username = username;
-  }
-
-  @JsonProperty
-  public String getPassword() {
-    return password;
-  }
-
-  @JsonProperty
-  public void setPassword(String password) {
-    this.password = password;
+  @JsonProperty("reportsUser")
+  public void setRoUser(LoginInfo roUser) {
+    this.roUser = roUser;
   }
 
   public Morphia getMorphia() {
     return morphia;
   }
 
-  public MongoClient buildClient(Environment env) throws UnknownHostException {
-    if (mongoClient != null) {
-      return mongoClient;
+  public MongoClient buildReadWriteClient(Environment env) throws UnknownHostException {
+    if (rwClient != null) {
+      return rwClient;
     }
 
     Lock lock = locks[LockFlags.MONGO_CLIENT.ordinal()];
     lock.lock();
 
     try {
-      if (mongoClient == null) {
-        if (StringUtils.isBlank(username)) {
-          mongoClient = new MongoClient(new ServerAddress(host, port));
-        } else {
-          char[] passwordChars = password == null ? new char[0] : password.toCharArray();
-          mongoClient = new MongoClient(new ServerAddress(host, port), Arrays.asList(MongoCredential.createCredential(username, dbName, passwordChars)));
-        }
-
-        env.lifecycle().manage(new Managed() {
-          @Override
-          public void start() throws Exception {}
-
-          @Override
-          public void stop() throws Exception {
-            mongoClient.close();
-          }
-        });
+      if (rwClient == null) {
+        rwClient = buildClient(env, rwUser.getUsername(), rwUser.getPassword());
       }
     } finally {
       lock.unlock();
     }
 
+    return rwClient;
+  }
+
+  public MongoClient buildReadOnlyClient(Environment env) throws UnknownHostException {
+    if (roClient != null) {
+      return roClient;
+    }
+
+    if (roUser == null || rwUser.equals(roUser)) {
+      roClient = buildReadWriteClient(env);
+    }
+
+    Lock lock = locks[LockFlags.MONGO_CLIENT.ordinal()];
+    lock.lock();
+
+    try {
+      if (roClient == null && roUser != null) {
+        roClient = buildClient(env, roUser.getUsername(), roUser.getPassword());
+      }
+    } finally {
+      lock.unlock();
+    }
+
+    return roClient;
+  }
+
+  private MongoClient buildClient(Environment env, String username, String password) throws UnknownHostException {
+    final MongoClient mongoClient;
+    if (StringUtils.isBlank(username)) {
+      mongoClient = new MongoClient(new ServerAddress(host, port));
+    } else {
+      char[] passwordChars = password == null ? new char[0] : password.toCharArray();
+      mongoClient = new MongoClient(new ServerAddress(host, port), Arrays.asList(MongoCredential.createCredential(username, dbName, passwordChars)));
+    }
+
+    env.lifecycle().manage(new Managed() {
+      @Override
+      public void start() throws Exception {}
+
+      @Override
+      public void stop() throws Exception {
+        mongoClient.close();
+      }
+    });
+
     return mongoClient;
   }
 
-  public Datastore buildDatastore(Environment env) throws UnknownHostException {
-    if (datastore != null) {
-      return datastore;
+  public Datastore buildReadWriteDatastore(Environment env) throws UnknownHostException {
+    if (rwDatastore != null) {
+      return rwDatastore;
     }
 
     Lock lock = locks[LockFlags.DATASTORE.ordinal()];
     lock.lock();
 
     try {
-      if (datastore == null) {
-        datastore = morphia.createDatastore(buildClient(env), dbName);
+      if (rwDatastore == null) {
+        rwDatastore = morphia.createDatastore(buildReadWriteClient(env), dbName);
       }
     } finally {
       lock.unlock();
     }
 
-    return datastore;
+    return rwDatastore;
+  }
+
+  public Datastore buildReadOnlyDatastore(Environment env) throws UnknownHostException {
+    if (roDatastore != null) {
+      return roDatastore;
+    }
+
+    if (roUser == null || rwUser.equals(roUser)) {
+      roDatastore = buildReadWriteDatastore(env);
+    }
+
+    Lock lock = locks[LockFlags.DATASTORE.ordinal()];
+    lock.lock();
+
+    try {
+      if (roDatastore == null) {
+        roDatastore = morphia.createDatastore(buildReadOnlyClient(env), dbName);
+      }
+    } finally {
+      lock.unlock();
+    }
+
+    return roDatastore;
   }
 }

@@ -2,11 +2,17 @@
   "scriptsCacheDir": "/tmp/droptables/groovy/",
   "prettyPrint": true,
   "mongo": {
-    "username": "",
-    "password": "",
     "dbName": "test",
     "host": "localhost",
-    "port": 27017
+    "port": 27017,
+    "serviceUser": {
+      "username": "",
+      "password": ""
+    },
+    "reportsUser": {
+      "username": "",
+      "password": ""
+    }
   },
   "server": {
     "applicationConnectors": [

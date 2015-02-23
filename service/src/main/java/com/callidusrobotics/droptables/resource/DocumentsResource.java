@@ -52,7 +52,7 @@ public class DocumentsResource {
   private DocumentDao dao;
 
   public DocumentsResource(DropTablesConfig config, Environment env) throws UnknownHostException {
-    dao = new DocumentDao(config.getMongoFactory().buildDatastore(env));
+    dao = new DocumentDao(config.getMongoFactory().buildReadWriteDatastore(env));
   }
 
   @GET

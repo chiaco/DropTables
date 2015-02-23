@@ -42,6 +42,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.bson.types.ObjectId;
+import org.mongodb.morphia.Datastore;
 
 import com.callidusrobotics.droptables.configuration.DropTablesConfig;
 import com.callidusrobotics.droptables.model.DocumentDao;
@@ -55,11 +56,13 @@ import com.mongodb.WriteResult;
 @Consumes(MediaType.APPLICATION_JSON)
 public class GroovyResource {
   private final GroovyDao dao;
+  private final Datastore roDatastore;
   private final String scriptsCacheDir;
   private final GroovyScriptEngine engine;
 
   public GroovyResource(DropTablesConfig config, Environment env) throws IOException {
-    dao = new GroovyDao(config.getMongoFactory().buildDatastore(env));
+    dao = new GroovyDao(config.getMongoFactory().buildReadWriteDatastore(env));
+    roDatastore = config.getMongoFactory().buildReadOnlyDatastore(env);
     scriptsCacheDir = config.getScriptsCacheDir();
     String[] roots = {scriptsCacheDir};
 
@@ -110,9 +113,9 @@ public class GroovyResource {
       binding.setVariable(entry.getKey(), entry.getValue());
     }
 
-    // Give the script access to Mongo
-    // FIXME: Need to initialize the DAO with a list of collections that the script has access to
-    DocumentDao docDao = new DocumentDao(dao.getDatastore());
+    // Give the script read-only access to Mongo
+    // TODO: Scripts have read-only access, but should we manage what collections they have access to as well?
+    DocumentDao docDao = new DocumentDao(roDatastore);
     binding.setVariable("DAO", docDao);
 
     // Execute the script
