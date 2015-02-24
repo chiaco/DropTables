@@ -34,15 +34,20 @@ DropTables is built on top of DropWizard, Groovy, and Morphia.
 
 ## Push a Groovy script
 
-script.json
+Create a file called script.json:
 ```json
 {
   "name": "Print Collections",
   "author": "r-gerard",
-  "data": "OUTPUT = '<html><head><title>Collections</title></head><body><h1>Collections</h1><ul>' + DAO.getCollectionNames().collect { \"<li>\" + it + \"</li>\" }.join(\"\\n\") + '</ul></body></html>'"
+  "groovyTemplate": "<html><head><title>Collections</title></head><body bgcolor=\"<% print bgColor %>\"><h1>Collections</h1><ul><% print COLLECTIONS %></ul></body></html>",
+  "groovyScript": "// DAO is a global variable with read-only access to Mongo\nCOLLECTIONS = DAO.getCollectionNames().collect { \"<li>\" + it + \"</li>\" }.join(\"\\n\")",
+  "defaultParameters": {
+    "bgColor": "#FFFFFF"
+  }
 }
 ```
 
+Upsert the file to the /scripts endpoint:
 ```
 curl -X POST -H "Content-Type: application/json" -d @script.json "http://localhost:9000/scripts/"
 
@@ -51,4 +56,17 @@ curl -X POST -H "Content-Type: application/json" -d @script.json "http://localho
 
 ## Execute a Groovy script
 
+Use the _id returned by the upsert:
+
 `curl -X POST -H "Content-Type: application/json" -d "{}" "http://localhost:9000/scripts/54e8f1dbd9a93c9b467d5380/results" > results.html`
+
+The defaultParameters specified when the script was created can be overridden by the request body:
+
+`curl -X POST -H "Content-Type: application/json" -d "{\"bgColor\":\"#FF0000\"}" "http://localhost:9000/scripts/54e8f1dbd9a93c9b467d5380/results" > results.html`
+
+The contents of /tmp/droptables/groovy/54e8f1dbd9a93c9b467d5380.groovy should be:
+
+```groovy
+// DAO is a global variable with read-only access to Mongo
+COLLECTIONS = DAO.getCollectionNames().collect { "<li>" + it + "</li>" }.join("\n")
+```

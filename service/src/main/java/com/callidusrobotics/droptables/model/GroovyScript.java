@@ -17,11 +17,21 @@
 
 package com.callidusrobotics.droptables.model;
 
+import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
+import groovy.lang.Script;
+import groovy.text.SimpleTemplateEngine;
+import groovy.text.Template;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import org.apache.commons.io.FileUtils;
 import org.bson.types.ObjectId;
@@ -31,6 +41,8 @@ import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 import org.mongodb.morphia.annotations.PrePersist;
 import org.mongodb.morphia.annotations.Property;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity("groovy")
 public class GroovyScript {
@@ -53,8 +65,28 @@ public class GroovyScript {
   String author;
 
   @NotEmpty
-  @Property("data")
-  String data;
+  @Property("groovyTemplate")
+  String template;
+
+  @NotEmpty
+  @Property("groovyScript")
+  String script;
+
+  @Valid
+  @NotNull
+  @Property("defaultParameters")
+  Map<String, String> bindings;
+
+  @PrePersist
+  void prePersist() {
+    // FIXME: These dates should use Mongo's currentDate
+    // Maybe we could register GroovyDao as an @EntityListeners ?
+    if (created == null) {
+      created = modified = new Date();
+    } else {
+      modified = new Date();
+    }
+  }
 
   public ObjectId getId() {
     return id;
@@ -92,39 +124,76 @@ public class GroovyScript {
     this.author = author;
   }
 
-  public String getData() {
-    return data;
+  public String getTemplate() {
+    return template;
   }
 
-  @PrePersist
-  void prePersist() {
-    // FIXME: These dates should use Mongo's currentDate
-    // Maybe we could register GroovyDao as an @EntityListeners ?
-    if (created == null) {
-      created = modified = new Date();
-    } else {
-      modified = new Date();
-    }
+  @JsonProperty("groovyTemplate")
+  public void setTemplate(String template) throws CompilationFailedException, ClassNotFoundException, IOException {
+    new SimpleTemplateEngine().createTemplate(template);
+
+    this.template = template;
   }
 
-  public void setData(String data) throws CompilationFailedException {
-    new GroovyShell().parse(data);
-
-    this.data = data;
-  }
-
-  public boolean write(String cacheDir) {
-    if (id == null) {
-      return false;
-    }
-
-    String filename = id + ".json";
+  public Template parseTemplate() {
     try {
-      FileUtils.writeStringToFile(new File(cacheDir, filename), data);
-    } catch (IOException e) {
-      return false;
+      return new SimpleTemplateEngine().createTemplate(template);
+    } catch (CompilationFailedException | ClassNotFoundException | IOException e) {
+      return null;
+    }
+  }
+
+  public String getScript() {
+    return script;
+  }
+
+  @JsonProperty("groovyScript")
+  public void setScript(String script) throws CompilationFailedException {
+    new GroovyShell().parse(script);
+
+    this.script = script;
+  }
+
+  public Script parseScript() {
+    try {
+      return new GroovyShell().parse(script);
+    } catch (CompilationFailedException e) {
+      return null;
+    }
+  }
+
+  public String writeScript(String cacheDir) {
+    if (id == null) {
+      return null;
     }
 
-    return true;
+    String filename = id + ".groovy";
+    try {
+      FileUtils.writeStringToFile(new File(cacheDir, filename), script);
+    } catch (IOException e) {
+      return null;
+    }
+
+    return filename;
+  }
+
+  public Map<String, String> getParams() {
+    return Collections.unmodifiableMap(bindings);
+  }
+
+  @JsonProperty("defaultParameters")
+  @SuppressWarnings("unchecked")
+  public void setParams(Map<String, String> bindings) throws InstantiationException, IllegalAccessException {
+    this.bindings = bindings.getClass().newInstance();
+    this.bindings.putAll(bindings);
+  }
+
+  public Binding parseBinding() {
+    Binding binding = new Binding();
+    for (Entry<String, String> entry : bindings.entrySet()) {
+      binding.setVariable(entry.getKey(), entry.getValue());
+    }
+
+    return binding;
   }
 }

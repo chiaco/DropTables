@@ -18,6 +18,8 @@
 package com.callidusrobotics.droptables.resource;
 
 import groovy.lang.Binding;
+import groovy.lang.Script;
+import groovy.text.Template;
 import groovy.util.GroovyScriptEngine;
 import groovy.util.ResourceException;
 import groovy.util.ScriptException;
@@ -58,15 +60,14 @@ public class GroovyResource {
   private final GroovyDao dao;
   private final Datastore roDatastore;
   private final String scriptsCacheDir;
-  private final GroovyScriptEngine engine;
-
+  private final GroovyScriptEngine scriptEngine;
   public GroovyResource(DropTablesConfig config, Environment env) throws IOException {
     dao = new GroovyDao(config.getMongoFactory().buildReadWriteDatastore(env));
     roDatastore = config.getMongoFactory().buildReadOnlyDatastore(env);
     scriptsCacheDir = config.getScriptsCacheDir();
     String[] roots = {scriptsCacheDir};
 
-    engine = new GroovyScriptEngine(roots);
+    scriptEngine = new GroovyScriptEngine(roots);
   }
 
   @GET
@@ -102,34 +103,33 @@ public class GroovyResource {
   @POST
   public String execute(@Valid @PathParam("id") ObjectId id, @Valid Map<String, String> scriptBindings) {
     // Fetch the script from the database
-    GroovyScript script = dao.get(id);
-    if (!script.write(scriptsCacheDir)) {
-      throw new WebApplicationException(Response.Status.NOT_FOUND);
+    GroovyScript groovyPojo = dao.get(id);
+    Script script = groovyPojo.parseScript();
+    Template template = groovyPojo.parseTemplate();
+    Binding binding = groovyPojo.parseBinding();
+    String filename = groovyPojo.writeScript(scriptsCacheDir);
+
+    if (script == null || template == null || binding == null || filename == null) {
+      throw new WebApplicationException(Response.Status.BAD_REQUEST);
     }
 
     // Set key-value pairs in the request body as variable bindings for the script
-    Binding binding = new Binding();
     for (Entry<String, String> entry : scriptBindings.entrySet()) {
       binding.setVariable(entry.getKey(), entry.getValue());
     }
 
     // Give the script read-only access to Mongo
-    // TODO: Scripts have read-only access, but should we manage what collections they have access to as well?
     DocumentDao docDao = new DocumentDao(roDatastore);
     binding.setVariable("DAO", docDao);
 
     // Execute the script
     try {
-      engine.run(id + ".json", binding);
+      scriptEngine.run(filename, binding);
     } catch (ResourceException | ScriptException e) {
       throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
     }
 
-    // All done
-    if (binding.hasVariable("OUTPUT") && binding.getVariable("OUTPUT") != null) {
-      return binding.getVariable("OUTPUT").toString() + "\n";
-    }
-
-    return "";
+    // Process the template with the final binding
+    return template.make(binding.getVariables()).toString();
   }
 }
