@@ -60,6 +60,10 @@ public class GroovyScript {
   @Property("name")
   String name;
 
+  @NotNull
+  @Property("description")
+  String description;
+
   @NotEmpty
   @Property("author")
   String author;
@@ -92,6 +96,7 @@ public class GroovyScript {
     return id;
   }
 
+  @JsonProperty("dateCreated")
   public Date getCreated() {
     if (created == null) {
       return null;
@@ -100,6 +105,7 @@ public class GroovyScript {
     return new Date(created.getTime());
   }
 
+  @JsonProperty("dateModified")
   public Date getModified() {
     if (modified == null) {
       return null;
@@ -108,22 +114,37 @@ public class GroovyScript {
     return new Date(modified.getTime());
   }
 
+  @JsonProperty("name")
   public String getName() {
     return name;
   }
 
+  @JsonProperty("name")
   public void setName(String name) {
     this.name = name;
   }
 
+  @JsonProperty("description")
+  public String getDescription() {
+    return description;
+  }
+
+  @JsonProperty("description")
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  @JsonProperty("author")
   public String getAuthor() {
     return author;
   }
 
+  @JsonProperty("author")
   public void setAuthor(String author) {
     this.author = author;
   }
 
+  @JsonProperty("groovyTemplate")
   public String getTemplate() {
     return template;
   }
@@ -143,6 +164,7 @@ public class GroovyScript {
     }
   }
 
+  @JsonProperty("groovyScript")
   public String getScript() {
     return script;
   }
@@ -177,6 +199,7 @@ public class GroovyScript {
     return filename;
   }
 
+  @JsonProperty("defaultParameters")
   public Map<String, String> getParams() {
     return Collections.unmodifiableMap(bindings);
   }
