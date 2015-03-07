@@ -38,35 +38,35 @@ import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class GroovyScriptTest {
+public class GroovyReportTest {
   static final String GOOD_SCRIPT = "var1 = [0, 1, 2]\nprint var1";
   static final String BAD_SCRIPT = "var1 = [\nprint var1";
   static final String GOOD_TEMPLATE = "<html><% print [0, 1, 2] %></html>";
   static final String BAD_TEMPLATE = "<html><% print [0, ";
 
-  GroovyScript groovyScript;
+  GroovyReport groovyReport;
 
   @Before
   public void before() {
-    groovyScript = new GroovyScript();
+    groovyReport = new GroovyReport();
   }
 
   @Test
   public void toJsonSuccess() throws Exception {
-    groovyScript.created = new Date(1111111);
-    groovyScript.modified = new Date(5555555);
-    groovyScript.id = new ObjectId("54e8f1dbd9a93c9b467d5380");
-    groovyScript.script = GOOD_SCRIPT;
-    groovyScript.template = GOOD_TEMPLATE;
-    groovyScript.name = "Script1";
-    groovyScript.author = "John Doe";
-    groovyScript.description = "This is a script for testing serialization";
+    groovyReport.created = new Date(1111111);
+    groovyReport.modified = new Date(5555555);
+    groovyReport.id = new ObjectId("54e8f1dbd9a93c9b467d5380");
+    groovyReport.script = GOOD_SCRIPT;
+    groovyReport.template = GOOD_TEMPLATE;
+    groovyReport.name = "Script1";
+    groovyReport.author = "John Doe";
+    groovyReport.description = "This is a script for testing serialization";
 
     String expectedJson = "{\"id\":{\"date\":1424552411000,\"time\":1424552411000,\"timestamp\":1424552411,\"timeSecond\":1424552411,\"inc\":1182618496,\"machine\":-643220325,\"new\":false},\"dateCreated\":1111111,\"dateModified\":5555555,\"name\":\"Script1\",\"description\":\"This is a script for testing serialization\",\"author\":\"John Doe\",\"groovyTemplate\":\"<html><% print [0, 1, 2] %></html>\",\"groovyScript\":\"var1 = [0, 1, 2]\\nprint var1\",\"defaultParameters\":{}}";
 
     // Unit under test
     ObjectMapper mapper = new ObjectMapper();
-    String result = mapper.writeValueAsString(groovyScript);
+    String result = mapper.writeValueAsString(groovyReport);
 
     // Verify results
     JSONAssert.assertJsonEquals(expectedJson, result);
@@ -74,87 +74,87 @@ public class GroovyScriptTest {
 
   @Test
   public void prePersistNewObject() throws Exception {
-    groovyScript.created = groovyScript.modified = null;
+    groovyReport.created = groovyReport.modified = null;
 
     // Unit under test
-    groovyScript.prePersist();
+    groovyReport.prePersist();
 
     // Verify results
-    assertNotNull("dateCreated is null", groovyScript.getCreated());
-    assertNotNull("dateModified is null", groovyScript.getModified());
-    assertEquals(groovyScript.getCreated(), groovyScript.getModified());
+    assertNotNull("dateCreated is null", groovyReport.getCreated());
+    assertNotNull("dateModified is null", groovyReport.getModified());
+    assertEquals(groovyReport.getCreated(), groovyReport.getModified());
   }
 
   @Test
   public void prePersistModifiedObject() throws Exception {
     Date dateInitial = new Date(0);
-    groovyScript.created = groovyScript.modified = dateInitial;
+    groovyReport.created = groovyReport.modified = dateInitial;
 
     // Unit under test
-    groovyScript.prePersist();
+    groovyReport.prePersist();
 
     // Verify results
-    assertNotNull("dateCreated is null", groovyScript.getCreated());
-    assertEquals("dateCreated was modified", dateInitial, groovyScript.getCreated());
-    assertNotNull("dateModified is null", groovyScript.getModified());
-    assertTrue("dateModified was not updated", dateInitial.getTime() != groovyScript.getModified().getTime());
+    assertNotNull("dateCreated is null", groovyReport.getCreated());
+    assertEquals("dateCreated was modified", dateInitial, groovyReport.getCreated());
+    assertNotNull("dateModified is null", groovyReport.getModified());
+    assertTrue("dateModified was not updated", dateInitial.getTime() != groovyReport.getModified().getTime());
   }
 
   @Test
   public void setScriptSuccess() throws Exception {
-    groovyScript.setScript(GOOD_SCRIPT);
+    groovyReport.setScript(GOOD_SCRIPT);
 
-    assertEquals(GOOD_SCRIPT, groovyScript.getScript());
+    assertEquals(GOOD_SCRIPT, groovyReport.getScript());
   }
 
   @Test(expected = CompilationFailedException.class)
   public void setScriptFailure() throws Exception {
-    groovyScript.setScript(BAD_SCRIPT);
+    groovyReport.setScript(BAD_SCRIPT);
   }
 
   @Test
   public void parseScriptSuccess() throws Exception {
-    groovyScript.script = GOOD_SCRIPT;
-    Script result = groovyScript.parseScript();
+    groovyReport.script = GOOD_SCRIPT;
+    Script result = groovyReport.parseScript();
 
     assertNotNull("Failed to parse script", result);
   }
 
   @Test(expected = GroovyRuntimeException.class)
   public void parseScriptFailure() throws Exception {
-    groovyScript.script = BAD_SCRIPT;
-    groovyScript.parseScript();
+    groovyReport.script = BAD_SCRIPT;
+    groovyReport.parseScript();
   }
 
   @Test
   public void setTemplateSuccess() throws Exception {
-    groovyScript.setTemplate(GOOD_TEMPLATE);
+    groovyReport.setTemplate(GOOD_TEMPLATE);
 
-    assertEquals(GOOD_TEMPLATE, groovyScript.getTemplate());
+    assertEquals(GOOD_TEMPLATE, groovyReport.getTemplate());
   }
 
   @Test(expected = GroovyRuntimeException.class)
   public void setTemplateFailure() throws Exception {
-    groovyScript.setTemplate(BAD_TEMPLATE);
+    groovyReport.setTemplate(BAD_TEMPLATE);
   }
 
   @Test
   public void parseTemplateSuccess() throws Exception {
-    groovyScript.template = GOOD_TEMPLATE;
-    Template result = groovyScript.parseTemplate();
+    groovyReport.template = GOOD_TEMPLATE;
+    Template result = groovyReport.parseTemplate();
 
     assertNotNull("Failed to parse template", result);
   }
 
   @Test(expected = GroovyRuntimeException.class)
   public void parseTemplateFailure() throws Exception {
-    groovyScript.template = BAD_TEMPLATE;
-    groovyScript.parseTemplate();
+    groovyReport.template = BAD_TEMPLATE;
+    groovyReport.parseTemplate();
   }
 
   @Test
   public void parseBindingsSuccessNoBindings() throws Exception {
-    Binding result = groovyScript.parseBinding();
+    Binding result = groovyReport.parseBinding();
 
     assertNotNull("Failed to parse variable bindings", result);
   }
@@ -167,8 +167,8 @@ public class GroovyScriptTest {
     bindings.put("c", "3");
 
     // Unit under test
-    groovyScript.setParams(bindings);
-    Binding result = groovyScript.parseBinding();
+    groovyReport.setBinding(bindings);
+    Binding result = groovyReport.parseBinding();
 
     // Verify results
     assertNotNull("Failed to parse variable bindings", result);

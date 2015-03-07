@@ -54,7 +54,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @since 0.0.1
  */
 @Entity("groovy")
-public class GroovyScript {
+public class GroovyReport {
   @Id
   ObjectId id;
 
@@ -87,7 +87,7 @@ public class GroovyScript {
   @Valid
   @NotNull
   @Property("defaultParameters")
-  Map<String, String> bindings = Collections.emptyMap();
+  Map<String, String> binding = Collections.emptyMap();
 
   @PrePersist
   void prePersist() {
@@ -210,28 +210,28 @@ public class GroovyScript {
   }
 
   @JsonProperty("defaultParameters")
-  public Map<String, String> getParams() {
-    return Collections.unmodifiableMap(bindings);
+  public Map<String, String> getBinding() {
+    return Collections.unmodifiableMap(binding);
   }
 
   @JsonProperty("defaultParameters")
   @SuppressWarnings("unchecked")
-  public void setParams(Map<String, String> bindings) throws InstantiationException, IllegalAccessException {
-    this.bindings = bindings.getClass().newInstance();
-    this.bindings.putAll(bindings);
+  public void setBinding(Map<String, String> binding) throws InstantiationException, IllegalAccessException {
+    this.binding = binding.getClass().newInstance();
+    this.binding.putAll(binding);
   }
 
   /**
    * Converts the Map of default parameters into a Binding object.
    *
-   * @return The bindings, never null
+   * @return The Binding, never null
    */
   public Binding parseBinding() {
-    Binding binding = new Binding();
-    for (Entry<String, String> entry : bindings.entrySet()) {
-      binding.setVariable(entry.getKey(), entry.getValue());
+    Binding result = new Binding();
+    for (Entry<String, String> entry : binding.entrySet()) {
+      result.setVariable(entry.getKey(), entry.getValue());
     }
 
-    return binding;
+    return result;
   }
 }
