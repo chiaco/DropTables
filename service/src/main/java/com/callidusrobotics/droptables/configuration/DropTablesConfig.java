@@ -28,10 +28,15 @@ import org.hibernate.validator.constraints.NotEmpty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.callidusrobotics.droptables.factory.MongoFactory;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Top-level configuration class.
+ *
+ * @author Rusty Gerard
+ * @since 0.0.1
+ */
 public class DropTablesConfig extends Configuration {
   private static final Logger LOGGER = LoggerFactory.getLogger(DropTablesConfig.class);
 

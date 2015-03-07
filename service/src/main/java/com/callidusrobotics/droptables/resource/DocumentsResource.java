@@ -45,6 +45,14 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
 
+/**
+ * REST APIs to perform CRUD operations on arbitrary documents within any
+ * collection in the database.
+ *
+ * @author Rusty Gerard
+ * @since 0.0.1
+ * @see DocumentDao
+ */
 @Path("/collections/")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

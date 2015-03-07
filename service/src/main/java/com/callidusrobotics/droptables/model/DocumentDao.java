@@ -50,8 +50,10 @@ public class DocumentDao {
   /**
    * Fetches a document from a collection.
    *
-   * @param collectionName The collection containing the document.
-   * @param id The document ID
+   * @param collectionName
+   *          The collection containing the document.
+   * @param id
+   *          The document ID
    * @return The document, nullable
    */
   public DBObject getDocument(String collectionName, ObjectId id) {
@@ -69,8 +71,10 @@ public class DocumentDao {
   /**
    * Deletes a document from a collection.
    *
-   * @param collectionName The collection containing the document.
-   * @param id The document ID
+   * @param collectionName
+   *          The collection containing the document.
+   * @param id
+   *          The document ID
    * @return True if the document was deleted, false otherwise
    */
   public WriteResult deleteDocument(String collectionName, ObjectId id) {
@@ -79,12 +83,13 @@ public class DocumentDao {
   }
 
   /**
-   * Upserts a document into a collection.
-   * Creates the collection if it does not exist.
-   * Creates the document if it does not exist.
+   * Upserts a document into a collection. Creates the collection if it does not
+   * exist. Creates the document if it does not exist.
    *
-   * @param collectionName The collection to upsert to
-   * @param document The document to upsert
+   * @param collectionName
+   *          The collection to upsert to
+   * @param document
+   *          The document to upsert
    * @return ObjectId of the upserted document
    */
   public ObjectId upsertDocument(String collectionName, DBObject document) {
@@ -97,8 +102,10 @@ public class DocumentDao {
   /**
    * Finds distinct values for a specified key among documents in a collection.
    *
-   * @param collectionName The collection to search
-   * @param key The document key to select on
+   * @param collectionName
+   *          The collection to search
+   * @param key
+   *          The document key to select on
    * @return A list of distinct values, never null
    */
   public List<String> getDistinctValues(String collectionName, String key) {
@@ -114,9 +121,12 @@ public class DocumentDao {
   /**
    * Finds documents containing the desired key,value pair.
    *
-   * @param collectionName The collection to search
-   * @param key The document key to select on
-   * @param value The desired value
+   * @param collectionName
+   *          The collection to search
+   * @param key
+   *          The document key to select on
+   * @param value
+   *          The desired value
    * @return A list of matching documents, never null
    */
   public List<DBObject> getDocumentsByField(String collectionName, String key, String value) {
@@ -130,7 +140,8 @@ public class DocumentDao {
   /**
    * Finds all documents.
    *
-   * @param collectionName The collection to search
+   * @param collectionName
+   *          The collection to search
    * @return A list of matching documents, never null
    */
   public List<DBObject> getAllDocuments(String collectionName) {
@@ -154,7 +165,8 @@ public class DocumentDao {
   }
 
   /**
-   * Generates a list of collections in the database, excluding the system collections.
+   * Generates a list of collections in the database, excluding the system
+   * collections.
    *
    * @return A set of collection names, never null
    */

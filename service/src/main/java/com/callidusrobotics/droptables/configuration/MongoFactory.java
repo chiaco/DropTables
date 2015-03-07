@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.callidusrobotics.droptables.factory;
+package com.callidusrobotics.droptables.configuration;
 
 import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.setup.Environment;
@@ -35,12 +35,23 @@ import org.hibernate.validator.constraints.NotEmpty;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
 
-import com.callidusrobotics.droptables.configuration.LoginInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 
+/**
+ * Factory to manage connection pools for a single database.
+ * <p>
+ * Supports up to two connection pools: a read-write client for use by the
+ * application, and optionally a read-only client for use by report generators.
+ * <br>
+ * Access control is handled using role-based authorization within the database.
+ *
+ * @author Rusty Gerard
+ * @since 0.0.1
+ * @see DropTablesConfig
+ */
 public class MongoFactory {
   private enum LockFlags {
     MONGO_CLIENT,
@@ -121,6 +132,15 @@ public class MongoFactory {
     return morphia;
   }
 
+  /**
+   * Generates a connection pool using the read-write credentials.
+   *
+   * @param env
+   *          The application's environment
+   * @return The connection pool, never null
+   * @throws UnknownHostException
+   * @see #setRwUser(LoginInfo)
+   */
   public MongoClient buildReadWriteClient(Environment env) throws UnknownHostException {
     if (rwClient != null) {
       return rwClient;
@@ -140,6 +160,18 @@ public class MongoFactory {
     return rwClient;
   }
 
+  /**
+   * Generates a connection pool using the read-only credentials. <br>
+   * If the read-only credentials are not provided, or if the read-only
+   * credentials are the same as the read-write credentials, it returns the
+   * read-write connection pool instead.
+   *
+   * @param env
+   *          The application's environment
+   * @return The connection pool, never null
+   * @throws UnknownHostException
+   * @see #setRoUser(LoginInfo)
+   */
   public MongoClient buildReadOnlyClient(Environment env) throws UnknownHostException {
     if (roClient != null) {
       return roClient;
@@ -185,6 +217,15 @@ public class MongoFactory {
     return mongoClient;
   }
 
+  /**
+   * Generates a connection wrapper using the read-write credentials.
+   *
+   * @param env
+   *          The application's environment
+   * @return The connection wrapper, never null
+   * @throws UnknownHostException
+   * @see #buildReadWriteClient(Environment)
+   */
   public Datastore buildReadWriteDatastore(Environment env) throws UnknownHostException {
     if (rwDatastore != null) {
       return rwDatastore;
@@ -204,6 +245,15 @@ public class MongoFactory {
     return rwDatastore;
   }
 
+  /**
+   * Generates a connection wrapper using the read-only credentials.
+   *
+   * @param env
+   *          The application's environment.
+   * @return The connection wrapper, never null
+   * @throws UnknownHostException
+   * @see #buildReadOnlyClient(Environment)
+   */
   public Datastore buildReadOnlyDatastore(Environment env) throws UnknownHostException {
     if (roDatastore != null) {
       return roDatastore;

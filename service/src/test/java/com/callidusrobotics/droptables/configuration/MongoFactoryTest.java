@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.callidusrobotics.droptables.factory;
+package com.callidusrobotics.droptables.configuration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -31,6 +31,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.mongodb.morphia.Datastore;
 
 import com.callidusrobotics.droptables.configuration.LoginInfo;
+import com.callidusrobotics.droptables.configuration.MongoFactory;
 import com.mongodb.MongoClient;
 
 @RunWith(MockitoJUnitRunner.class)

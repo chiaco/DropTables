@@ -26,6 +26,12 @@ import com.codahale.metrics.health.HealthCheck;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
 
+/**
+ * Health check to verify the connection(s) to MongoDB are open and credentials are valid.
+ *
+ * @author Rusty Gerard
+ * @since 0.0.1
+ */
 public class MongoHealthCheck extends HealthCheck {
 
   private final MongoClient rwClient, roClient;

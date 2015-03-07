@@ -32,6 +32,12 @@ import com.callidusrobotics.droptables.resource.GroovyResource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+/**
+ * Main method for spinning up the HTTP server.
+ *
+ * @author Rusty Gerard
+ * @since 0.0.1
+ */
 public class DropTablesApp extends Application<DropTablesConfig> {
 
   public static void main(String[] args) throws Exception {

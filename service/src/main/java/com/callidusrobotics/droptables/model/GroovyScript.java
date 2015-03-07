@@ -23,6 +23,7 @@ import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 import groovy.text.SimpleTemplateEngine;
 import groovy.text.Template;
+import groovy.util.GroovyScriptEngine;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,15 +46,21 @@ import org.mongodb.morphia.annotations.Property;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * POJO to store Groovy scripts, templates, and default variable bindings for
+ * ad-hoc report generation.
+ *
+ * @author Rusty Gerard
+ * @since 0.0.1
+ */
 @Entity("groovy")
 public class GroovyScript {
-
   @Id
   ObjectId id;
 
   @Property("dateCreated")
   Date created;
-  
+
   @Property("dateModified")
   Date modified;
 
@@ -173,10 +180,24 @@ public class GroovyScript {
     this.script = script;
   }
 
+  /**
+   * Converts the String into a Script object.
+   *
+   * @return The Script object, never null
+   * @throws CompilationFailedException
+   */
   public Script parseScript() throws CompilationFailedException {
     return new GroovyShell().parse(script);
   }
 
+  /**
+   * Writes the String data to a file for use by a {@link GroovyScriptEngine}.
+   *
+   * @param cacheDir
+   *          The directory to create the file in.
+   * @return The name of the file that was written to.
+   * @throws IOException
+   */
   public String writeScript(String cacheDir) throws IOException {
     if (id == null) {
       throw new IOException("Unable to persist script: ID not set.");
@@ -200,6 +221,11 @@ public class GroovyScript {
     this.bindings.putAll(bindings);
   }
 
+  /**
+   * Converts the Map of default parameters into a Binding object.
+   *
+   * @return The bindings, never null
+   */
   public Binding parseBinding() {
     Binding binding = new Binding();
     for (Entry<String, String> entry : bindings.entrySet()) {

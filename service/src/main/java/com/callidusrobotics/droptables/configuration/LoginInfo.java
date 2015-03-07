@@ -23,6 +23,13 @@ import org.apache.commons.lang.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * POJO for storing username + password tuples.
+ *
+ * @author Rusty Gerard
+ * @since 0.0.1
+ * @see MongoFactory
+ */
 public class LoginInfo {
   @NotNull
   private String username;

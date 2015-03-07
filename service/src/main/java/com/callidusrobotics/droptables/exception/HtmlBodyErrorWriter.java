@@ -33,6 +33,12 @@ import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.io.Charsets;
 
+/**
+ * Converts error messages to text/html.
+ *
+ * @author Rusty Gerard
+ * @since 0.0.1
+ */
 @Provider
 @Produces(MediaType.TEXT_HTML)
 public class HtmlBodyErrorWriter implements MessageBodyWriter<ErrorMessage> {
@@ -43,19 +49,19 @@ public class HtmlBodyErrorWriter implements MessageBodyWriter<ErrorMessage> {
   }
 
   @Override
-  public long getSize(ErrorMessage t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-    return getData(t).getBytes(Charsets.UTF_8).length;
+  public long getSize(ErrorMessage message, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+    return getData(message).getBytes(Charsets.UTF_8).length;
   }
 
   @Override
-  public void writeTo(ErrorMessage t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
-    entityStream.write(getData(t).getBytes(Charsets.UTF_8));
+  public void writeTo(ErrorMessage message, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
+    entityStream.write(getData(message).getBytes(Charsets.UTF_8));
   }
 
-  protected String getData(ErrorMessage t) {
+  protected String getData(ErrorMessage message) {
     StringBuilder builder = new StringBuilder();
     builder.append("<html><head><title>Error</title></head><body>");
-    builder.append(t.getMessage());
+    builder.append(message.getMessage());
     builder.append("</body></html>");
 
     return builder.toString();

@@ -24,6 +24,12 @@ import java.io.File;
 import com.callidusrobotics.droptables.configuration.DropTablesConfig;
 import com.codahale.metrics.health.HealthCheck;
 
+/**
+ * Health check to verify that the local filesystem is writable.
+ *
+ * @author Rusty Gerard
+ * @since 0.0.1
+ */
 public class FileSystemHealthCheck extends HealthCheck {
   private final String scriptsCacheDir;
 
