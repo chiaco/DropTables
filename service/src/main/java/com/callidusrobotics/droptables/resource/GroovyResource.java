@@ -48,6 +48,7 @@ import org.mongodb.morphia.Datastore;
 
 import com.callidusrobotics.droptables.configuration.DropTablesConfig;
 import com.callidusrobotics.droptables.configuration.MongoFactory;
+import com.callidusrobotics.droptables.exception.HtmlWebApplicationException;
 import com.callidusrobotics.droptables.model.DocumentDao;
 import com.callidusrobotics.droptables.model.GroovyDao;
 import com.callidusrobotics.droptables.model.GroovyReport;
@@ -158,7 +159,7 @@ public class GroovyResource {
       binding = groovyReport.parseBinding();
       filename = groovyReport.writeScript(scriptsCacheDir);
     } catch (GroovyRuntimeException | IOException | ClassNotFoundException e) {
-      throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
+      throw new HtmlWebApplicationException(e, Response.Status.BAD_REQUEST);
     }
 
     // Set key-value pairs in the request body as variable bindings for the script
@@ -174,14 +175,14 @@ public class GroovyResource {
     try {
       scriptEngine.run(filename, binding);
     } catch (ResourceException | ScriptException | GroovyRuntimeException e) {
-      throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
+      throw new HtmlWebApplicationException(e, Response.Status.BAD_REQUEST);
     }
 
     // Process the template with the final binding
     try {
       return template.make(binding.getVariables()).toString();
     } catch (GroovyRuntimeException e) {
-      throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
+      throw new HtmlWebApplicationException(e, Response.Status.BAD_REQUEST);
     }
   }
 }
