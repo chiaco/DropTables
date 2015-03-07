@@ -18,7 +18,7 @@
 package com.callidusrobotics.droptables.resource;
 
 import groovy.lang.Binding;
-import groovy.lang.Script;
+import groovy.lang.GroovyRuntimeException;
 import groovy.text.Template;
 import groovy.util.GroovyScriptEngine;
 import groovy.util.ResourceException;
@@ -61,11 +61,20 @@ public class GroovyResource {
   private final Datastore roDatastore;
   private final String scriptsCacheDir;
   private final GroovyScriptEngine scriptEngine;
+
+  // Constructor for unit tests
+  GroovyResource(GroovyDao dao, Datastore roDatastore, GroovyScriptEngine scriptEngine, String scriptsCacheDir) {
+    this.dao = dao;
+    this.roDatastore = roDatastore;
+    this.scriptEngine = scriptEngine;
+    this.scriptsCacheDir = scriptsCacheDir;
+  }
+
   public GroovyResource(DropTablesConfig config, Environment env) throws IOException {
     dao = new GroovyDao(config.getMongoFactory().buildReadWriteDatastore(env));
     roDatastore = config.getMongoFactory().buildReadOnlyDatastore(env);
     scriptsCacheDir = config.getScriptsCacheDir();
-    String[] roots = {scriptsCacheDir};
+    String[] roots = { scriptsCacheDir };
 
     scriptEngine = new GroovyScriptEngine(roots);
   }
@@ -104,13 +113,20 @@ public class GroovyResource {
   public String execute(@Valid @PathParam("id") ObjectId id, @Valid Map<String, String> scriptBindings) {
     // Fetch the script from the database
     GroovyScript groovyPojo = dao.get(id);
-    Script script = groovyPojo.parseScript();
-    Template template = groovyPojo.parseTemplate();
-    Binding binding = groovyPojo.parseBinding();
-    String filename = groovyPojo.writeScript(scriptsCacheDir);
+    if (groovyPojo == null) {
+      throw new WebApplicationException(Response.Status.NOT_FOUND);
+    }
 
-    if (script == null || template == null || binding == null || filename == null) {
-      throw new WebApplicationException(Response.Status.BAD_REQUEST);
+    Template template;
+    Binding binding;
+    String filename;
+    try {
+      groovyPojo.parseScript();
+      template = groovyPojo.parseTemplate();
+      binding = groovyPojo.parseBinding();
+      filename = groovyPojo.writeScript(scriptsCacheDir);
+    } catch (GroovyRuntimeException | IOException | ClassNotFoundException e) {
+      throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
     }
 
     // Set key-value pairs in the request body as variable bindings for the script
@@ -125,11 +141,15 @@ public class GroovyResource {
     // Execute the script
     try {
       scriptEngine.run(filename, binding);
-    } catch (ResourceException | ScriptException e) {
+    } catch (ResourceException | ScriptException | GroovyRuntimeException e) {
       throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
     }
 
     // Process the template with the final binding
-    return template.make(binding.getVariables()).toString();
+    try {
+      return template.make(binding.getVariables()).toString();
+    } catch (GroovyRuntimeException e) {
+      throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
+    }
   }
 }

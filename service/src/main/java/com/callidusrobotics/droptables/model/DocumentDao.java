@@ -56,8 +56,7 @@ public class DocumentDao {
    */
   public DBObject getDocument(String collectionName, ObjectId id) {
     DBCollection collection = getCollection(collectionName);
-    DBCursor cursor;
-    cursor = collection.find(makeRef(id.toString()));
+    DBCursor cursor = collection.find(makeRef(id));
 
     List<DBObject> results = getDocuments(cursor);
     if (results.size() > 0) {
@@ -183,14 +182,6 @@ public class DocumentDao {
   protected static DBObject flatten(DBObject item) {
     item.put(DOC_ID, item.get(DOC_ID).toString());
     return item;
-  }
-
-  protected static DBObject makeRef(String id) {
-    try {
-      return makeRef(new ObjectId(id));
-    } catch (IllegalArgumentException e) {
-      return null;
-    }
   }
 
   protected static DBObject makeRef(ObjectId id) {

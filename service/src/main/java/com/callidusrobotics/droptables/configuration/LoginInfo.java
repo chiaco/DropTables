@@ -30,6 +30,15 @@ public class LoginInfo {
   @NotNull
   private String password;
 
+  public LoginInfo() {
+    username = password = "";
+  }
+
+  public LoginInfo(String username, String password) {
+    setUsername(username);
+    setPassword(password);
+  }
+
   @JsonProperty
   public String getUsername() {
     return username;

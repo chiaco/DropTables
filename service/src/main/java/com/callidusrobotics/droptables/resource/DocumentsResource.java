@@ -51,6 +51,11 @@ import com.mongodb.WriteResult;
 public class DocumentsResource {
   private DocumentDao dao;
 
+  // Constructor for unit tests
+  DocumentsResource(DocumentDao dao) {
+    this.dao = dao;
+  }
+
   public DocumentsResource(DropTablesConfig config, Environment env) throws UnknownHostException {
     dao = new DocumentDao(config.getMongoFactory().buildReadWriteDatastore(env));
   }

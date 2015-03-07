@@ -18,6 +18,7 @@
 package com.callidusrobotics.droptables.model;
 
 import groovy.lang.Binding;
+import groovy.lang.GroovyRuntimeException;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 import groovy.text.SimpleTemplateEngine;
@@ -79,7 +80,7 @@ public class GroovyScript {
   @Valid
   @NotNull
   @Property("defaultParameters")
-  Map<String, String> bindings;
+  Map<String, String> bindings = Collections.emptyMap();
 
   @PrePersist
   void prePersist() {
@@ -150,18 +151,14 @@ public class GroovyScript {
   }
 
   @JsonProperty("groovyTemplate")
-  public void setTemplate(String template) throws CompilationFailedException, ClassNotFoundException, IOException {
+  public void setTemplate(String template) throws GroovyRuntimeException, ClassNotFoundException, IOException {
     new SimpleTemplateEngine().createTemplate(template);
 
     this.template = template;
   }
 
-  public Template parseTemplate() {
-    try {
-      return new SimpleTemplateEngine().createTemplate(template);
-    } catch (CompilationFailedException | ClassNotFoundException | IOException e) {
-      return null;
-    }
+  public Template parseTemplate() throws CompilationFailedException, ClassNotFoundException, IOException {
+    return new SimpleTemplateEngine().createTemplate(template);
   }
 
   @JsonProperty("groovyScript")
@@ -176,25 +173,17 @@ public class GroovyScript {
     this.script = script;
   }
 
-  public Script parseScript() {
-    try {
-      return new GroovyShell().parse(script);
-    } catch (CompilationFailedException e) {
-      return null;
-    }
+  public Script parseScript() throws CompilationFailedException {
+    return new GroovyShell().parse(script);
   }
 
-  public String writeScript(String cacheDir) {
+  public String writeScript(String cacheDir) throws IOException {
     if (id == null) {
-      return null;
+      throw new IOException("Unable to persist script: ID not set.");
     }
 
     String filename = id + ".groovy";
-    try {
-      FileUtils.writeStringToFile(new File(cacheDir, filename), script);
-    } catch (IOException e) {
-      return null;
-    }
+    FileUtils.writeStringToFile(new File(cacheDir, filename), script);
 
     return filename;
   }
