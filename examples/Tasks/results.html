@@ -1,0 +1,126 @@
+<html>
+  <head>
+    <title>TaskSet Report</title>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["table","corechart"]});
+      google.setOnLoadCallback(drawCharts);
+
+      function drawCharts() {
+        drawUsersTable()
+        drawDurationBarChart()
+        drawTimingScatterChart()
+        drawDevPieChart()
+        drawQaPieChart()
+        drawProdPieChart()
+      }
+
+      function drawUsersTable() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Name');
+        data.addColumn('number', 'DEV Successes');
+        data.addColumn('number', 'DEV Failures');
+        data.addColumn('number', 'QA Successes');
+        data.addColumn('number', 'QA Failures');
+        data.addColumn('number', 'PROD Successes');
+        data.addColumn('number', 'PROD Failures');
+        data.addColumn('number', 'Total Successes');
+        data.addColumn('number', 'Total Failures');
+        data.addColumn('number', 'Total SubTasks Performed');
+        data.addRows([
+          ['luke', 19, 9, 9, 10, 9, 0, 37, 19, 56],['leia', 19, 10, 10, 9, 9, 0, 38, 19, 57],['han', 10, 5, 5, 5, 5, 0, 20, 10, 30],['chewie', 9, 5, 5, 5, 5, 0, 19, 10, 29],['lando', 10, 4, 4, 5, 5, 0, 19, 9, 28]
+        ]);
+        var table = new google.visualization.Table(document.getElementById('user_table_div'));
+        table.draw(data, {showRowNumber: true});
+      }
+
+      function drawDurationBarChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Duration (seconds)', 'Frequency'],
+          ['60', 3],['90', 3],['120', 7],['150', 8],['180', 9],['210', 9],['240', 12],['270', 9],['300', 9],['330', 12],['360', 6],['390', 6],['420', 4],['450', 3]
+        ]);
+        var options = {
+          title: '',
+          hAxis: { title: 'TaskSet Duration (in seconds)' },
+          vAxis: { title: 'Frequency' },
+          legend: { position: 'none' }
+        };
+        var chart = new google.visualization.ColumnChart(document.getElementById('duration_barchart_div'));
+        chart.draw(data, options);
+      }
+
+      function drawTimingScatterChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Timestamp', 'Total Duration (seconds)', {type: 'string', role: 'tooltip'}, {type: 'string', role: 'style'}],
+          [new Date('Sun Sep 09 18:46:40 PDT 2001'), 150, '(Sun Sep 09 18:46:40 PDT 2001): 2 tasks performed in 150 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Mon Sep 10 18:46:40 PDT 2001'), 240, '(Mon Sep 10 18:46:40 PDT 2001): 3 tasks performed in 240 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Tue Sep 11 18:46:40 PDT 2001'), 150, '(Tue Sep 11 18:46:40 PDT 2001): 1 tasks performed in 150 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Wed Sep 12 18:46:40 PDT 2001'), 240, '(Wed Sep 12 18:46:40 PDT 2001): 2 tasks performed in 240 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Thu Sep 13 18:46:40 PDT 2001'), 330, '(Thu Sep 13 18:46:40 PDT 2001): 3 tasks performed in 330 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Fri Sep 14 18:46:40 PDT 2001'), 240, '(Fri Sep 14 18:46:40 PDT 2001): 1 tasks performed in 240 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Sat Sep 15 18:46:40 PDT 2001'), 330, '(Sat Sep 15 18:46:40 PDT 2001): 2 tasks performed in 330 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Sun Sep 16 18:46:40 PDT 2001'), 420, '(Sun Sep 16 18:46:40 PDT 2001): 3 tasks performed in 420 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Mon Sep 17 18:46:40 PDT 2001'), 330, '(Mon Sep 17 18:46:40 PDT 2001): 1 tasks performed in 330 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Tue Sep 18 18:46:40 PDT 2001'), 120, '(Tue Sep 18 18:46:40 PDT 2001): 2 tasks performed in 120 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Wed Sep 19 18:46:40 PDT 2001'), 210, '(Wed Sep 19 18:46:40 PDT 2001): 3 tasks performed in 210 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Thu Sep 20 18:46:40 PDT 2001'), 120, '(Thu Sep 20 18:46:40 PDT 2001): 1 tasks performed in 120 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Fri Sep 21 18:46:40 PDT 2001'), 210, '(Fri Sep 21 18:46:40 PDT 2001): 2 tasks performed in 210 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Sat Sep 22 18:46:40 PDT 2001'), 300, '(Sat Sep 22 18:46:40 PDT 2001): 3 tasks performed in 300 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Sun Sep 23 18:46:40 PDT 2001'), 210, '(Sun Sep 23 18:46:40 PDT 2001): 1 tasks performed in 210 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Mon Sep 24 18:46:40 PDT 2001'), 300, '(Mon Sep 24 18:46:40 PDT 2001): 2 tasks performed in 300 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Tue Sep 25 18:46:40 PDT 2001'), 390, '(Tue Sep 25 18:46:40 PDT 2001): 3 tasks performed in 390 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Wed Sep 26 18:46:40 PDT 2001'), 300, '(Wed Sep 26 18:46:40 PDT 2001): 1 tasks performed in 300 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Thu Sep 27 18:46:40 PDT 2001'), 390, '(Thu Sep 27 18:46:40 PDT 2001): 2 tasks performed in 390 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Fri Sep 28 18:46:40 PDT 2001'), 180, '(Fri Sep 28 18:46:40 PDT 2001): 3 tasks performed in 180 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Sat Sep 29 18:46:40 PDT 2001'), 90, '(Sat Sep 29 18:46:40 PDT 2001): 1 tasks performed in 90 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Sun Sep 30 18:46:40 PDT 2001'), 180, '(Sun Sep 30 18:46:40 PDT 2001): 2 tasks performed in 180 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Mon Oct 01 18:46:40 PDT 2001'), 270, '(Mon Oct 01 18:46:40 PDT 2001): 3 tasks performed in 270 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Tue Oct 02 18:46:40 PDT 2001'), 180, '(Tue Oct 02 18:46:40 PDT 2001): 1 tasks performed in 180 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Wed Oct 03 18:46:40 PDT 2001'), 270, '(Wed Oct 03 18:46:40 PDT 2001): 2 tasks performed in 270 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Thu Oct 04 18:46:40 PDT 2001'), 360, '(Thu Oct 04 18:46:40 PDT 2001): 3 tasks performed in 360 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Fri Oct 05 18:46:40 PDT 2001'), 270, '(Fri Oct 05 18:46:40 PDT 2001): 1 tasks performed in 270 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Sat Oct 06 18:46:40 PDT 2001'), 360, '(Sat Oct 06 18:46:40 PDT 2001): 2 tasks performed in 360 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Sun Oct 07 18:46:40 PDT 2001'), 450, '(Sun Oct 07 18:46:40 PDT 2001): 3 tasks performed in 450 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Mon Oct 08 18:46:40 PDT 2001'), 60, '(Mon Oct 08 18:46:40 PDT 2001): 1 tasks performed in 60 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Tue Oct 09 18:46:40 PDT 2001'), 150, '(Tue Oct 09 18:46:40 PDT 2001): 2 tasks performed in 150 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Wed Oct 10 18:46:40 PDT 2001'), 240, '(Wed Oct 10 18:46:40 PDT 2001): 3 tasks performed in 240 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Thu Oct 11 18:46:40 PDT 2001'), 150, '(Thu Oct 11 18:46:40 PDT 2001): 1 tasks performed in 150 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Fri Oct 12 18:46:40 PDT 2001'), 240, '(Fri Oct 12 18:46:40 PDT 2001): 2 tasks performed in 240 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Sat Oct 13 18:46:40 PDT 2001'), 330, '(Sat Oct 13 18:46:40 PDT 2001): 3 tasks performed in 330 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Sun Oct 14 18:46:40 PDT 2001'), 240, '(Sun Oct 14 18:46:40 PDT 2001): 1 tasks performed in 240 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Mon Oct 15 18:46:40 PDT 2001'), 330, '(Mon Oct 15 18:46:40 PDT 2001): 2 tasks performed in 330 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Tue Oct 16 18:46:40 PDT 2001'), 420, '(Tue Oct 16 18:46:40 PDT 2001): 3 tasks performed in 420 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Wed Oct 17 18:46:40 PDT 2001'), 330, '(Wed Oct 17 18:46:40 PDT 2001): 1 tasks performed in 330 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Thu Oct 18 18:46:40 PDT 2001'), 120, '(Thu Oct 18 18:46:40 PDT 2001): 2 tasks performed in 120 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Fri Oct 19 18:46:40 PDT 2001'), 210, '(Fri Oct 19 18:46:40 PDT 2001): 3 tasks performed in 210 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Sat Oct 20 18:46:40 PDT 2001'), 120, '(Sat Oct 20 18:46:40 PDT 2001): 1 tasks performed in 120 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Sun Oct 21 18:46:40 PDT 2001'), 210, '(Sun Oct 21 18:46:40 PDT 2001): 2 tasks performed in 210 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Mon Oct 22 18:46:40 PDT 2001'), 300, '(Mon Oct 22 18:46:40 PDT 2001): 3 tasks performed in 300 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Tue Oct 23 18:46:40 PDT 2001'), 210, '(Tue Oct 23 18:46:40 PDT 2001): 1 tasks performed in 210 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Wed Oct 24 18:46:40 PDT 2001'), 300, '(Wed Oct 24 18:46:40 PDT 2001): 2 tasks performed in 300 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Thu Oct 25 18:46:40 PDT 2001'), 390, '(Thu Oct 25 18:46:40 PDT 2001): 3 tasks performed in 390 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Fri Oct 26 18:46:40 PDT 2001'), 300, '(Fri Oct 26 18:46:40 PDT 2001): 1 tasks performed in 300 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Sat Oct 27 18:46:40 PDT 2001'), 390, '(Sat Oct 27 18:46:40 PDT 2001): 2 tasks performed in 390 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Sun Oct 28 17:46:40 PST 2001'), 180, '(Sun Oct 28 17:46:40 PST 2001): 3 tasks performed in 180 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Mon Oct 29 17:46:40 PST 2001'), 90, '(Mon Oct 29 17:46:40 PST 2001): 1 tasks performed in 90 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Tue Oct 30 17:46:40 PST 2001'), 180, '(Tue Oct 30 17:46:40 PST 2001): 2 tasks performed in 180 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Wed Oct 31 17:46:40 PST 2001'), 270, '(Wed Oct 31 17:46:40 PST 2001): 3 tasks performed in 270 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Thu Nov 01 17:46:40 PST 2001'), 180, '(Thu Nov 01 17:46:40 PST 2001): 1 tasks performed in 180 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Fri Nov 02 17:46:40 PST 2001'), 270, '(Fri Nov 02 17:46:40 PST 2001): 2 tasks performed in 270 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Sat Nov 03 17:46:40 PST 2001'), 360, '(Sat Nov 03 17:46:40 PST 2001): 3 tasks performed in 360 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Sun Nov 04 17:46:40 PST 2001'), 270, '(Sun Nov 04 17:46:40 PST 2001): 1 tasks performed in 270 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Mon Nov 05 17:46:40 PST 2001'), 360, '(Mon Nov 05 17:46:40 PST 2001): 2 tasks performed in 360 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Wed Nov 07 17:46:40 PST 2001'), 60, '(Wed Nov 07 17:46:40 PST 2001): 1 tasks performed in 60 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Tue Nov 06 17:46:40 PST 2001'), 450, '(Tue Nov 06 17:46:40 PST 2001): 3 tasks performed in 450 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Thu Nov 08 17:46:40 PST 2001'), 150, '(Thu Nov 08 17:46:40 PST 2001): 2 tasks performed in 150 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Fri Nov 09 17:46:40 PST 2001'), 240, '(Fri Nov 09 17:46:40 PST 2001): 3 tasks performed in 240 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Sat Nov 10 17:46:40 PST 2001'), 150, '(Sat Nov 10 17:46:40 PST 2001): 1 tasks performed in 150 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Sun Nov 11 17:46:40 PST 2001'), 240, '(Sun Nov 11 17:46:40 PST 2001): 2 tasks performed in 240 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Mon Nov 12 17:46:40 PST 2001'), 330, '(Mon Nov 12 17:46:40 PST 2001): 3 tasks performed in 330 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Tue Nov 13 17:46:40 PST 2001'), 240, '(Tue Nov 13 17:46:40 PST 2001): 1 tasks performed in 240 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Wed Nov 14 17:46:40 PST 2001'), 330, '(Wed Nov 14 17:46:40 PST 2001): 2 tasks performed in 330 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Thu Nov 15 17:46:40 PST 2001'), 420, '(Thu Nov 15 17:46:40 PST 2001): 3 tasks performed in 420 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Fri Nov 16 17:46:40 PST 2001'), 330, '(Fri Nov 16 17:46:40 PST 2001): 1 tasks performed in 330 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Sat Nov 17 17:46:40 PST 2001'), 120, '(Sat Nov 17 17:46:40 PST 2001): 2 tasks performed in 120 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Sun Nov 18 17:46:40 PST 2001'), 210, '(Sun Nov 18 17:46:40 PST 2001): 3 tasks performed in 210 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Mon Nov 19 17:46:40 PST 2001'), 120, '(Mon Nov 19 17:46:40 PST 2001): 1 tasks performed in 120 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Tue Nov 20 17:46:40 PST 2001'), 210, '(Tue Nov 20 17:46:40 PST 2001): 2 tasks performed in 210 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Wed Nov 21 17:46:40 PST 2001'), 300, '(Wed Nov 21 17:46:40 PST 2001): 3 tasks performed in 300 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Thu Nov 22 17:46:40 PST 2001'), 210, '(Thu Nov 22 17:46:40 PST 2001): 1 tasks performed in 210 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Fri Nov 23 17:46:40 PST 2001'), 300, '(Fri Nov 23 17:46:40 PST 2001): 2 tasks performed in 300 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Sat Nov 24 17:46:40 PST 2001'), 390, '(Sat Nov 24 17:46:40 PST 2001): 3 tasks performed in 390 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Sun Nov 25 17:46:40 PST 2001'), 300, '(Sun Nov 25 17:46:40 PST 2001): 1 tasks performed in 300 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Mon Nov 26 17:46:40 PST 2001'), 390, '(Mon Nov 26 17:46:40 PST 2001): 2 tasks performed in 390 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Tue Nov 27 17:46:40 PST 2001'), 180, '(Tue Nov 27 17:46:40 PST 2001): 3 tasks performed in 180 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Wed Nov 28 17:46:40 PST 2001'), 90, '(Wed Nov 28 17:46:40 PST 2001): 1 tasks performed in 90 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Thu Nov 29 17:46:40 PST 2001'), 180, '(Thu Nov 29 17:46:40 PST 2001): 2 tasks performed in 180 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Fri Nov 30 17:46:40 PST 2001'), 270, '(Fri Nov 30 17:46:40 PST 2001): 3 tasks performed in 270 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Sat Dec 01 17:46:40 PST 2001'), 180, '(Sat Dec 01 17:46:40 PST 2001): 1 tasks performed in 180 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Sun Dec 02 17:46:40 PST 2001'), 270, '(Sun Dec 02 17:46:40 PST 2001): 2 tasks performed in 270 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Mon Dec 03 17:46:40 PST 2001'), 360, '(Mon Dec 03 17:46:40 PST 2001): 3 tasks performed in 360 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Tue Dec 04 17:46:40 PST 2001'), 270, '(Tue Dec 04 17:46:40 PST 2001): 1 tasks performed in 270 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Wed Dec 05 17:46:40 PST 2001'), 360, '(Wed Dec 05 17:46:40 PST 2001): 2 tasks performed in 360 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Thu Dec 06 17:46:40 PST 2001'), 450, '(Thu Dec 06 17:46:40 PST 2001): 3 tasks performed in 450 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Fri Dec 07 17:46:40 PST 2001'), 60, '(Fri Dec 07 17:46:40 PST 2001): 1 tasks performed in 60 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Sat Dec 08 17:46:40 PST 2001'), 150, '(Sat Dec 08 17:46:40 PST 2001): 2 tasks performed in 150 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Sun Dec 09 17:46:40 PST 2001'), 240, '(Sun Dec 09 17:46:40 PST 2001): 3 tasks performed in 240 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Mon Dec 10 17:46:40 PST 2001'), 150, '(Mon Dec 10 17:46:40 PST 2001): 1 tasks performed in 150 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Tue Dec 11 17:46:40 PST 2001'), 240, '(Tue Dec 11 17:46:40 PST 2001): 2 tasks performed in 240 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Wed Dec 12 17:46:40 PST 2001'), 330, '(Wed Dec 12 17:46:40 PST 2001): 3 tasks performed in 330 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Thu Dec 13 17:46:40 PST 2001'), 240, '(Thu Dec 13 17:46:40 PST 2001): 1 tasks performed in 240 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Fri Dec 14 17:46:40 PST 2001'), 330, '(Fri Dec 14 17:46:40 PST 2001): 2 tasks performed in 330 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Sat Dec 15 17:46:40 PST 2001'), 420, '(Sat Dec 15 17:46:40 PST 2001): 3 tasks performed in 420 seconds. Status: PASS', 'point { fill-color: blue }'],[new Date('Sun Dec 16 17:46:40 PST 2001'), 330, '(Sun Dec 16 17:46:40 PST 2001): 1 tasks performed in 330 seconds. Status: FAIL', 'point { fill-color: red }'],[new Date('Mon Dec 17 17:46:40 PST 2001'), 120, '(Mon Dec 17 17:46:40 PST 2001): 2 tasks performed in 120 seconds. Status: FAIL', 'point { fill-color: red }']
+        ]);
+        var options = {
+          title: '',
+          hAxis: { title: 'TaskSet startTime', ticks: [new Date('Sep 8, 2001'), new Date('Dec 18, 2001')] },
+          vAxis: { title: 'TaskSet Duration (in seconds)' },
+          legend: { position: 'none' }
+        };
+        var chart = new google.visualization.ScatterChart(document.getElementById('time_scatterchart_div'));
+        chart.draw(data, options);
+      }
+
+      function drawDevPieChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Status', 'Frequency'],
+          ['PASS', 67],
+          ['FAIL', 33]
+        ]);
+        var options = {
+          title: 'SubTasks Performed in DEV'
+        };
+        var chart = new google.visualization.PieChart(document.getElementById('dev_piechart'));
+        chart.draw(data, options);
+      }
+
+      function drawQaPieChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Status', 'Frequency'],
+          ['PASS', 33],
+          ['FAIL', 34]
+        ]);
+        var options = {
+          title: 'SubTasks Performed in QA'
+        };
+        var chart = new google.visualization.PieChart(document.getElementById('qa_piechart'));
+        chart.draw(data, options);
+      }
+
+      function drawProdPieChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Status', 'Frequency'],
+          ['PASS', 33],
+          ['FAIL', 0]
+        ]);
+        var options = {
+          title: 'SubTasks Performed in PROD'
+        };
+        var chart = new google.visualization.PieChart(document.getElementById('prod_piechart'));
+        chart.draw(data, options);
+      }
+
+    </script>
+  </head>
+  <body bgcolor="#FFFFFF">
+    <h1>TaskSet Report for Sep 8, 2001 to Dec 18, 2001</h1>
+    A TaskSet is a set of tasks performed in one or more environments (dev, qa, prod).
+    <br>
+    For each environment, the task can be performed if and only if each preceding task in the TaskSet was successful.
+    <h1>SubTask Performers</h1>
+    <div id="user_table_div" style="width: 850px; height: 150px;"></div>
+    <h1>TaskSet Durations</h1>
+    <div id="duration_barchart_div" style="width: 600px; height: 300px;"></div>
+    <h1>TaskSet Durations Over Time</h1>
+    <div id="time_scatterchart_div" style="width: 600px; height: 300px;"></div>
+    <h1>SubTask Success/Failure Rates</h1>
+    <table>
+      <tr>
+        <td><div id="dev_piechart" style="width: 300px; height: 300px;"></div></td><td><div id="qa_piechart" style="width: 300px; height: 300px;"></div></td><td><div id="prod_piechart" style="width: 300px; height: 300px;"></div></td>
+      </tr>
+    </table>
+  </body>
+</html>
