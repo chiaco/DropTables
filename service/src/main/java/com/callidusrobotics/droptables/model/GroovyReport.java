@@ -53,7 +53,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Rusty Gerard
  * @since 0.0.1
  */
-@Entity("groovy")
+@Entity("droptables.reports")
 public class GroovyReport {
   @Id
   ObjectId id;

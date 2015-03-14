@@ -64,7 +64,7 @@ import com.mongodb.WriteResult;
  * @see GroovyDao
  * @see GroovyReport
  */
-@Path("/scripts/")
+@Path("/reports/")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class GroovyResource {

@@ -74,19 +74,19 @@ db.taskSets.find()
 First, upload the report generator:
 
 ```shell
-curl -X POST -H "Content-Type: application/json" -d @report.json "http://localhost:9000/scripts/"
+curl -X POST -H "Content-Type: application/json" -d @report.json "http://localhost:9000/reports/"
 ```
 
 Now, execute it:
 
 ```shell
-curl -X POST -H "Content-Type: application/json" -d "{}" "http://localhost:9000/scripts/54f9262fb0db29cfff711b99/results" > results.html
+curl -X POST -H "Content-Type: application/json" -d "{}" "http://localhost:9000/reports/54f9262fb0db29cfff711b99/results" > results.html
 ```
 
 The time interval is configurable:
 
 ```shell
-curl -X POST -H "Content-Type: application/json" -d "{\"queryStartTime\":\"Oct 30, 2001\", \"queryEndTime\":\"Oct 31, 2001\"}" "http://localhost:9000/scripts/54f9262fb0db29cfff711b99/results" > results.html
+curl -X POST -H "Content-Type: application/json" -d "{\"queryStartTime\":\"Oct 30, 2001\", \"queryEndTime\":\"Oct 31, 2001\"}" "http://localhost:9000/reports/54f9262fb0db29cfff711b99/results" > results.html
 ```
 
 # Implementation details
