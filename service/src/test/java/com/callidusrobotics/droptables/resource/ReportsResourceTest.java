@@ -201,7 +201,7 @@ public class ReportsResourceTest {
 
       verify(mockScriptEngine).run(FILENAME, mockBinding);
 
-      assertTrue(e.getMessage().contains(message));
+      assertTrue(e.getCause().getMessage().contains(message));
       assertEquals(Response.Status.BAD_REQUEST, Status.fromStatusCode(e.getResponse().getStatus()));
 
       throw e;
@@ -232,7 +232,7 @@ public class ReportsResourceTest {
 
       verify(mockScriptEngine).run(FILENAME, mockBinding);
 
-      assertTrue(e.getMessage().contains(message));
+      assertTrue(e.getCause().getMessage().contains(message));
       assertEquals(Response.Status.BAD_REQUEST, Status.fromStatusCode(e.getResponse().getStatus()));
 
       throw e;
@@ -256,7 +256,7 @@ public class ReportsResourceTest {
 
       verify(mockGroovyReport).parseScript();
 
-      assertTrue(e.getMessage().contains(message));
+      assertTrue(e.getCause().getMessage().contains(message));
       assertEquals(Response.Status.BAD_REQUEST, Status.fromStatusCode(e.getResponse().getStatus()));
 
       throw e;
@@ -281,7 +281,7 @@ public class ReportsResourceTest {
       verify(mockGroovyReport).parseScript();
       verify(mockGroovyReport).parseTemplate();
 
-      assertTrue(e.getMessage().contains(message));
+      assertTrue(e.getCause().getMessage().contains(message));
       assertEquals(Response.Status.BAD_REQUEST, Status.fromStatusCode(e.getResponse().getStatus()));
 
       throw e;
@@ -307,7 +307,7 @@ public class ReportsResourceTest {
       verify(mockGroovyReport).parseTemplate();
       verify(mockGroovyReport).parseBinding();
 
-      assertTrue(e.getMessage().contains(message));
+      assertTrue(e.getCause().getMessage().contains(message));
       assertEquals(Response.Status.BAD_REQUEST, Status.fromStatusCode(e.getResponse().getStatus()));
 
       throw e;
@@ -334,7 +334,7 @@ public class ReportsResourceTest {
       verify(mockGroovyReport).parseBinding();
       verify(mockGroovyReport).writeScript(CACHE_DIR);
 
-      assertTrue(e.getMessage().contains(message));
+      assertTrue(e.getCause().getMessage().contains(message));
       assertEquals(Response.Status.BAD_REQUEST, Status.fromStatusCode(e.getResponse().getStatus()));
 
       throw e;
@@ -362,7 +362,7 @@ public class ReportsResourceTest {
       verify(mockGroovyReport).writeScript(CACHE_DIR);
       verify(mockScriptEngine).run(FILENAME, mockBinding);
 
-      assertTrue(e.getMessage().contains(message));
+      assertTrue(e.getCause().getMessage().contains(message));
       assertEquals(Response.Status.BAD_REQUEST, Status.fromStatusCode(e.getResponse().getStatus()));
 
       throw e;
@@ -390,7 +390,7 @@ public class ReportsResourceTest {
       verify(mockGroovyReport).writeScript(CACHE_DIR);
       verify(mockScriptEngine).run(FILENAME, mockBinding);
 
-      assertTrue(e.getMessage().contains(message));
+      assertTrue(e.getCause().getMessage().contains(message));
       assertEquals(Response.Status.BAD_REQUEST, Status.fromStatusCode(e.getResponse().getStatus()));
 
       throw e;
@@ -418,7 +418,7 @@ public class ReportsResourceTest {
       verify(mockGroovyReport).writeScript(CACHE_DIR);
       verify(mockScriptEngine).run(FILENAME, mockBinding);
 
-      assertTrue(e.getMessage().contains(message));
+      assertTrue(e.getCause().getMessage().contains(message));
       assertEquals(Response.Status.BAD_REQUEST, Status.fromStatusCode(e.getResponse().getStatus()));
 
       throw e;

@@ -36,7 +36,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.bson.types.ObjectId;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.hibernate.validator.constraints.NotEmpty;

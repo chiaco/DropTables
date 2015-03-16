@@ -102,7 +102,7 @@ public class ReportGeneratorTest {
     assertTrue("dateModified was not updated", dateInitial.getTime() != reportGenerator.getModified().getTime());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expected = NullPointerException.class)
   public void setLanguageFailureNull() throws Exception {
     reportGenerator.setLanguage(null);
   }
