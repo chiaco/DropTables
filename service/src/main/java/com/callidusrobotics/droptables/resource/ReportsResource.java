@@ -21,8 +21,6 @@ import groovy.lang.Binding;
 import groovy.lang.GroovyRuntimeException;
 import groovy.text.Template;
 import groovy.util.GroovyScriptEngine;
-import groovy.util.ResourceException;
-import groovy.util.ScriptException;
 import io.dropwizard.setup.Environment;
 
 import java.io.IOException;
@@ -172,16 +170,17 @@ public class ReportsResource {
     binding.setVariable("DAO", docDao);
 
     // Execute the script
+    // Note that the script can throw any type of exception, not just the types declared by the engine's run method
     try {
       scriptEngine.run(filename, binding);
-    } catch (ResourceException | ScriptException | GroovyRuntimeException e) {
+    } catch (Exception e) {
       throw new HtmlWebApplicationException(e, Response.Status.BAD_REQUEST);
     }
 
     // Process the template with the final binding
     try {
       return template.make(binding.getVariables()).toString();
-    } catch (GroovyRuntimeException e) {
+    } catch (Exception e) {
       throw new HtmlWebApplicationException(e, Response.Status.BAD_REQUEST);
     }
   }

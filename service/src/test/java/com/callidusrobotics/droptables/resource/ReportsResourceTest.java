@@ -25,6 +25,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import groovy.lang.Binding;
 import groovy.lang.GroovyRuntimeException;
+import groovy.lang.MissingPropertyException;
 import groovy.lang.Script;
 import groovy.lang.Writable;
 import groovy.text.Template;
@@ -332,6 +333,90 @@ public class ReportsResourceTest {
       verify(mockGroovyReport).parseTemplate();
       verify(mockGroovyReport).parseBinding();
       verify(mockGroovyReport).writeScript(CACHE_DIR);
+
+      assertTrue(e.getMessage().contains(message));
+      assertEquals(Response.Status.BAD_REQUEST, Status.fromStatusCode(e.getResponse().getStatus()));
+
+      throw e;
+    }
+  }
+
+  @Test(expected = WebApplicationException.class)
+  public void executeFailureScriptNpe() throws Exception {
+    String message = "Foo is null";
+
+    when(mockDao.get(mockId)).thenReturn(mockGroovyReport);
+    when(mockScriptEngine.run(FILENAME, mockBinding)).thenThrow(new NullPointerException(message));
+
+    Map<String, String> requestBindings = ImmutableMap.of("foo", "bar");
+
+    // Unit under test
+    try {
+      resource.execute(mockId, requestBindings);
+    } catch (WebApplicationException e) {
+      verify(mockDao).get(mockId);
+
+      verify(mockGroovyReport).parseScript();
+      verify(mockGroovyReport).parseTemplate();
+      verify(mockGroovyReport).parseBinding();
+      verify(mockGroovyReport).writeScript(CACHE_DIR);
+      verify(mockScriptEngine).run(FILENAME, mockBinding);
+
+      assertTrue(e.getMessage().contains(message));
+      assertEquals(Response.Status.BAD_REQUEST, Status.fromStatusCode(e.getResponse().getStatus()));
+
+      throw e;
+    }
+  }
+
+  @Test(expected = WebApplicationException.class)
+  public void executeFailureScriptUndefinedVariable() throws Exception {
+    String message = "No such property: foo";
+
+    when(mockDao.get(mockId)).thenReturn(mockGroovyReport);
+    when(mockScriptEngine.run(FILENAME, mockBinding)).thenThrow(new MissingPropertyException(message));
+
+    Map<String, String> requestBindings = ImmutableMap.of("foo", "bar");
+
+    // Unit under test
+    try {
+      resource.execute(mockId, requestBindings);
+    } catch (WebApplicationException e) {
+      verify(mockDao).get(mockId);
+
+      verify(mockGroovyReport).parseScript();
+      verify(mockGroovyReport).parseTemplate();
+      verify(mockGroovyReport).parseBinding();
+      verify(mockGroovyReport).writeScript(CACHE_DIR);
+      verify(mockScriptEngine).run(FILENAME, mockBinding);
+
+      assertTrue(e.getMessage().contains(message));
+      assertEquals(Response.Status.BAD_REQUEST, Status.fromStatusCode(e.getResponse().getStatus()));
+
+      throw e;
+    }
+  }
+
+  @Test(expected = WebApplicationException.class)
+  public void executeFailureTemplateNpe() throws Exception {
+    String message = "Foo is null";
+
+    when(mockDao.get(mockId)).thenReturn(mockGroovyReport);
+    when(mockTemplate.make(isA(Map.class))).thenThrow(new NullPointerException(message));
+
+    Map<String, String> requestBindings = ImmutableMap.of("foo", "bar");
+
+    // Unit under test
+    try {
+      resource.execute(mockId, requestBindings);
+    } catch (WebApplicationException e) {
+      verify(mockDao).get(mockId);
+
+      verify(mockGroovyReport).parseScript();
+      verify(mockGroovyReport).parseTemplate();
+      verify(mockGroovyReport).parseBinding();
+      verify(mockGroovyReport).writeScript(CACHE_DIR);
+      verify(mockScriptEngine).run(FILENAME, mockBinding);
 
       assertTrue(e.getMessage().contains(message));
       assertEquals(Response.Status.BAD_REQUEST, Status.fromStatusCode(e.getResponse().getStatus()));
