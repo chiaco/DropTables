@@ -47,6 +47,21 @@ public class ReportGeneratorTest {
 
   ReportGenerator reportGenerator;
 
+  public static ReportGenerator buildReport() {
+    ReportGenerator report = new ReportGenerator();
+    report.created = new Date(1111111);
+    report.modified = new Date(5555555);
+    report.id = new ObjectId("54e8f1dbd9a93c9b467d5380");
+    report.language = Language.GROOVY;
+    report.script = GOOD_SCRIPT;
+    report.template = GOOD_TEMPLATE;
+    report.name = "Script1";
+    report.author = "John Doe";
+    report.description = "This is a script for testing serialization";
+
+    return report;
+  }
+
   @Before
   public void before() {
     reportGenerator = new ReportGenerator();
@@ -54,15 +69,7 @@ public class ReportGeneratorTest {
 
   @Test
   public void toJsonSuccess() throws Exception {
-    reportGenerator.created = new Date(1111111);
-    reportGenerator.modified = new Date(5555555);
-    reportGenerator.id = new ObjectId("54e8f1dbd9a93c9b467d5380");
-    reportGenerator.language = Language.GROOVY;
-    reportGenerator.script = GOOD_SCRIPT;
-    reportGenerator.template = GOOD_TEMPLATE;
-    reportGenerator.name = "Script1";
-    reportGenerator.author = "John Doe";
-    reportGenerator.description = "This is a script for testing serialization";
+    reportGenerator = buildReport();
 
     String expectedJson = "{\"id\":{\"date\":1424552411000,\"time\":1424552411000,\"timestamp\":1424552411,\"timeSecond\":1424552411,\"inc\":1182618496,\"machine\":-643220325,\"new\":false},\"dateCreated\":1111111,\"dateModified\":5555555,\"name\":\"Script1\",\"description\":\"This is a script for testing serialization\",\"author\":\"John Doe\",\"language\":\"GROOVY\",\"template\":\"<html><% print [0, 1, 2] %></html>\",\"script\":\"var1 = [0, 1, 2]\\nprint var1\",\"defaultParameters\":{}}";
 

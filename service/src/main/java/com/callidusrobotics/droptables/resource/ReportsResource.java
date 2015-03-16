@@ -22,6 +22,7 @@ import groovy.lang.GroovyRuntimeException;
 import groovy.text.Template;
 import groovy.util.GroovyScriptEngine;
 import io.dropwizard.setup.Environment;
+import io.dropwizard.views.View;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,6 +51,7 @@ import com.callidusrobotics.droptables.exception.HtmlWebApplicationException;
 import com.callidusrobotics.droptables.model.DocumentDao;
 import com.callidusrobotics.droptables.model.ReportDao;
 import com.callidusrobotics.droptables.model.ReportGenerator;
+import com.callidusrobotics.droptables.view.ReportView;
 import com.google.common.collect.ImmutableMap;
 import com.mongodb.WriteResult;
 
@@ -104,10 +106,16 @@ public class ReportsResource {
     return ImmutableMap.of(DocumentDao.DOC_ID, dao.save(entity).getId().toString());
   }
 
+  @Produces({ MediaType.TEXT_HTML, MediaType.APPLICATION_JSON })
   @Path("/{id}/")
   @GET
-  public ReportGenerator fetch(@Valid @PathParam("id") ObjectId id) {
-    return dao.get(id);
+  public View fetch(@Valid @PathParam("id") ObjectId id) {
+    ReportGenerator reportGenerator = dao.get(id);
+    if (reportGenerator == null) {
+      throw new WebApplicationException(Response.Status.NOT_FOUND);
+    }
+
+    return new ReportView(reportGenerator);
   }
 
   @Path("/{id}/")

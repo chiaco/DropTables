@@ -20,6 +20,7 @@ package com.callidusrobotics.droptables;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import io.dropwizard.views.ViewBundle;
 
 import java.io.IOException;
 
@@ -31,6 +32,7 @@ import com.callidusrobotics.droptables.resource.DocumentsResource;
 import com.callidusrobotics.droptables.resource.ReportsResource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.google.common.collect.ImmutableMap;
 
 /**
  * Main method for spinning up the HTTP server.
@@ -45,7 +47,14 @@ public class DropTablesApp extends Application<DropTablesConfig> {
   }
 
   @Override
-  public void initialize(Bootstrap<DropTablesConfig> bootstrap) {}
+  public void initialize(Bootstrap<DropTablesConfig> bootstrap) {
+    bootstrap.addBundle(new ViewBundle<DropTablesConfig>() {
+      @Override
+      public ImmutableMap<String, ImmutableMap<String, String>> getViewConfiguration(DropTablesConfig config) {
+        return ImmutableMap.of(".ftl", ImmutableMap.of("strict_syntax", "yes", "whitespace_stripping", "yes"));
+      }
+    });
+  }
 
   @Override
   public void run(DropTablesConfig config, Environment environment) throws IOException {
