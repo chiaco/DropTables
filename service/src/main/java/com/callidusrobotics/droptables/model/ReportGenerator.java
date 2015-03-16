@@ -36,6 +36,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.Validate;
 import org.bson.types.ObjectId;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -54,7 +55,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @since 0.0.1
  */
 @Entity("droptables.reports")
-public class GroovyReport {
+public class ReportGenerator {
+  /**
+   * Enumerated type of supported scripting languages.
+   *
+   * @author Rusty Gerard
+   * @since 0.0.1
+   */
+  public enum Language {
+    GROOVY
+  }
+
   @Id
   ObjectId id;
 
@@ -76,12 +87,17 @@ public class GroovyReport {
   @Property("author")
   String author;
 
+  @Valid
+  @NotNull
+  @Property("language")
+  Language language;
+
   @NotEmpty
-  @Property("groovyTemplate")
+  @Property("template")
   String template;
 
   @NotEmpty
-  @Property("groovyScript")
+  @Property("script")
   String script;
 
   @Valid
@@ -92,7 +108,7 @@ public class GroovyReport {
   @PrePersist
   void prePersist() {
     // FIXME: These dates should use Mongo's currentDate
-    // Maybe we could register GroovyDao as an @EntityListeners ?
+    // Maybe we could register ReportDao as an @EntityListeners ?
     if (created == null) {
       created = modified = new Date();
     } else {
@@ -152,12 +168,23 @@ public class GroovyReport {
     this.author = author;
   }
 
-  @JsonProperty("groovyTemplate")
+  @JsonProperty("language")
+  public Language getLanguage() {
+    return language;
+  }
+
+  @JsonProperty("language")
+  public void setLanguage(Language language) {
+    Validate.notNull(language);
+    this.language = language;
+  }
+
+  @JsonProperty("template")
   public String getTemplate() {
     return template;
   }
 
-  @JsonProperty("groovyTemplate")
+  @JsonProperty("template")
   public void setTemplate(String template) throws GroovyRuntimeException, ClassNotFoundException, IOException {
     new SimpleTemplateEngine().createTemplate(template);
 
@@ -168,12 +195,12 @@ public class GroovyReport {
     return new SimpleTemplateEngine().createTemplate(template);
   }
 
-  @JsonProperty("groovyScript")
+  @JsonProperty("script")
   public String getScript() {
     return script;
   }
 
-  @JsonProperty("groovyScript")
+  @JsonProperty("script")
   public void setScript(String script) throws CompilationFailedException {
     new GroovyShell().parse(script);
 

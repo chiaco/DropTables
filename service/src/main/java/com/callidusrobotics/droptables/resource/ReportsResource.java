@@ -50,8 +50,8 @@ import com.callidusrobotics.droptables.configuration.DropTablesConfig;
 import com.callidusrobotics.droptables.configuration.MongoFactory;
 import com.callidusrobotics.droptables.exception.HtmlWebApplicationException;
 import com.callidusrobotics.droptables.model.DocumentDao;
-import com.callidusrobotics.droptables.model.GroovyDao;
-import com.callidusrobotics.droptables.model.GroovyReport;
+import com.callidusrobotics.droptables.model.ReportDao;
+import com.callidusrobotics.droptables.model.ReportGenerator;
 import com.google.common.collect.ImmutableMap;
 import com.mongodb.WriteResult;
 
@@ -61,28 +61,28 @@ import com.mongodb.WriteResult;
  *
  * @author Rusty Gerard
  * @since 0.0.1
- * @see GroovyDao
- * @see GroovyReport
+ * @see ReportDao
+ * @see ReportGenerator
  */
 @Path("/reports/")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class GroovyResource {
-  private final GroovyDao dao;
+public class ReportsResource {
+  private final ReportDao dao;
   private final Datastore roDatastore;
   private final String scriptsCacheDir;
   private final GroovyScriptEngine scriptEngine;
 
   // Constructor for unit tests
-  GroovyResource(GroovyDao dao, Datastore roDatastore, GroovyScriptEngine scriptEngine, String scriptsCacheDir) {
+  ReportsResource(ReportDao dao, Datastore roDatastore, GroovyScriptEngine scriptEngine, String scriptsCacheDir) {
     this.dao = dao;
     this.roDatastore = roDatastore;
     this.scriptEngine = scriptEngine;
     this.scriptsCacheDir = scriptsCacheDir;
   }
 
-  public GroovyResource(DropTablesConfig config, Environment env) throws IOException {
-    dao = new GroovyDao(config.getMongoFactory().buildReadWriteDatastore(env));
+  public ReportsResource(DropTablesConfig config, Environment env) throws IOException {
+    dao = new ReportDao(config.getMongoFactory().buildReadWriteDatastore(env));
     roDatastore = config.getMongoFactory().buildReadOnlyDatastore(env);
     scriptsCacheDir = config.getScriptsCacheDir();
     String[] roots = { scriptsCacheDir };
@@ -102,13 +102,13 @@ public class GroovyResource {
   }
 
   @POST
-  public Map<String, String> upsert(@Valid GroovyReport entity) {
+  public Map<String, String> upsert(@Valid ReportGenerator entity) {
     return ImmutableMap.of(DocumentDao.DOC_ID, dao.save(entity).getId().toString());
   }
 
   @Path("/{id}/")
   @GET
-  public GroovyReport fetch(@Valid @PathParam("id") ObjectId id) {
+  public ReportGenerator fetch(@Valid @PathParam("id") ObjectId id) {
     return dao.get(id);
   }
 
@@ -132,7 +132,7 @@ public class GroovyResource {
    * are supplied to the template engine to produce the HTML report.
    *
    * @param id
-   *          The {@link GroovyReport} object to fetch from the database and
+   *          The {@link ReportGenerator} object to fetch from the database and
    *          execute
    * @param scriptBindings
    *          Variable bindings (key-value pairs) to override the default
@@ -145,8 +145,8 @@ public class GroovyResource {
   @POST
   public String execute(@Valid @PathParam("id") ObjectId id, @Valid Map<String, String> scriptBindings) {
     // Fetch the script from the database
-    GroovyReport groovyReport = dao.get(id);
-    if (groovyReport == null) {
+    ReportGenerator reportGenerator = dao.get(id);
+    if (reportGenerator == null) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
 
@@ -154,10 +154,10 @@ public class GroovyResource {
     Binding binding;
     String filename;
     try {
-      groovyReport.parseScript();
-      template = groovyReport.parseTemplate();
-      binding = groovyReport.parseBinding();
-      filename = groovyReport.writeScript(scriptsCacheDir);
+      reportGenerator.parseScript();
+      template = reportGenerator.parseTemplate();
+      binding = reportGenerator.parseBinding();
+      filename = reportGenerator.writeScript(scriptsCacheDir);
     } catch (GroovyRuntimeException | IOException | ClassNotFoundException e) {
       throw new HtmlWebApplicationException(e, Response.Status.BAD_REQUEST);
     }

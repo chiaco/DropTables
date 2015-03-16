@@ -22,13 +22,13 @@ import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.dao.BasicDAO;
 
 /**
- * DAO to manage GroovyReport objects.
+ * DAO to manage ReportGenerator objects.
  *
  * @author Rusty Gerard
  * @since 0.0.1
  */
-public class GroovyDao extends BasicDAO<GroovyReport, ObjectId> {
-  public GroovyDao(Datastore datastore) {
+public class ReportDao extends BasicDAO<ReportGenerator, ObjectId> {
+  public ReportDao(Datastore datastore) {
     super(datastore);
   }
 }

@@ -36,37 +36,39 @@ import org.codehaus.groovy.control.CompilationFailedException;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.callidusrobotics.droptables.model.ReportGenerator.Language;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class GroovyReportTest {
+public class ReportGeneratorTest {
   static final String GOOD_SCRIPT = "var1 = [0, 1, 2]\nprint var1";
   static final String BAD_SCRIPT = "var1 = [\nprint var1";
   static final String GOOD_TEMPLATE = "<html><% print [0, 1, 2] %></html>";
   static final String BAD_TEMPLATE = "<html><% print [0, ";
 
-  GroovyReport groovyReport;
+  ReportGenerator reportGenerator;
 
   @Before
   public void before() {
-    groovyReport = new GroovyReport();
+    reportGenerator = new ReportGenerator();
   }
 
   @Test
   public void toJsonSuccess() throws Exception {
-    groovyReport.created = new Date(1111111);
-    groovyReport.modified = new Date(5555555);
-    groovyReport.id = new ObjectId("54e8f1dbd9a93c9b467d5380");
-    groovyReport.script = GOOD_SCRIPT;
-    groovyReport.template = GOOD_TEMPLATE;
-    groovyReport.name = "Script1";
-    groovyReport.author = "John Doe";
-    groovyReport.description = "This is a script for testing serialization";
+    reportGenerator.created = new Date(1111111);
+    reportGenerator.modified = new Date(5555555);
+    reportGenerator.id = new ObjectId("54e8f1dbd9a93c9b467d5380");
+    reportGenerator.language = Language.GROOVY;
+    reportGenerator.script = GOOD_SCRIPT;
+    reportGenerator.template = GOOD_TEMPLATE;
+    reportGenerator.name = "Script1";
+    reportGenerator.author = "John Doe";
+    reportGenerator.description = "This is a script for testing serialization";
 
-    String expectedJson = "{\"id\":{\"date\":1424552411000,\"time\":1424552411000,\"timestamp\":1424552411,\"timeSecond\":1424552411,\"inc\":1182618496,\"machine\":-643220325,\"new\":false},\"dateCreated\":1111111,\"dateModified\":5555555,\"name\":\"Script1\",\"description\":\"This is a script for testing serialization\",\"author\":\"John Doe\",\"groovyTemplate\":\"<html><% print [0, 1, 2] %></html>\",\"groovyScript\":\"var1 = [0, 1, 2]\\nprint var1\",\"defaultParameters\":{}}";
+    String expectedJson = "{\"id\":{\"date\":1424552411000,\"time\":1424552411000,\"timestamp\":1424552411,\"timeSecond\":1424552411,\"inc\":1182618496,\"machine\":-643220325,\"new\":false},\"dateCreated\":1111111,\"dateModified\":5555555,\"name\":\"Script1\",\"description\":\"This is a script for testing serialization\",\"author\":\"John Doe\",\"language\":\"GROOVY\",\"template\":\"<html><% print [0, 1, 2] %></html>\",\"script\":\"var1 = [0, 1, 2]\\nprint var1\",\"defaultParameters\":{}}";
 
     // Unit under test
     ObjectMapper mapper = new ObjectMapper();
-    String result = mapper.writeValueAsString(groovyReport);
+    String result = mapper.writeValueAsString(reportGenerator);
 
     // Verify results
     JSONAssert.assertJsonEquals(expectedJson, result);
@@ -74,87 +76,92 @@ public class GroovyReportTest {
 
   @Test
   public void prePersistNewObject() throws Exception {
-    groovyReport.created = groovyReport.modified = null;
+    reportGenerator.created = reportGenerator.modified = null;
 
     // Unit under test
-    groovyReport.prePersist();
+    reportGenerator.prePersist();
 
     // Verify results
-    assertNotNull("dateCreated is null", groovyReport.getCreated());
-    assertNotNull("dateModified is null", groovyReport.getModified());
-    assertEquals(groovyReport.getCreated(), groovyReport.getModified());
+    assertNotNull("dateCreated is null", reportGenerator.getCreated());
+    assertNotNull("dateModified is null", reportGenerator.getModified());
+    assertEquals(reportGenerator.getCreated(), reportGenerator.getModified());
   }
 
   @Test
   public void prePersistModifiedObject() throws Exception {
     Date dateInitial = new Date(0);
-    groovyReport.created = groovyReport.modified = dateInitial;
+    reportGenerator.created = reportGenerator.modified = dateInitial;
 
     // Unit under test
-    groovyReport.prePersist();
+    reportGenerator.prePersist();
 
     // Verify results
-    assertNotNull("dateCreated is null", groovyReport.getCreated());
-    assertEquals("dateCreated was modified", dateInitial, groovyReport.getCreated());
-    assertNotNull("dateModified is null", groovyReport.getModified());
-    assertTrue("dateModified was not updated", dateInitial.getTime() != groovyReport.getModified().getTime());
+    assertNotNull("dateCreated is null", reportGenerator.getCreated());
+    assertEquals("dateCreated was modified", dateInitial, reportGenerator.getCreated());
+    assertNotNull("dateModified is null", reportGenerator.getModified());
+    assertTrue("dateModified was not updated", dateInitial.getTime() != reportGenerator.getModified().getTime());
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void setLanguageFailureNull() throws Exception {
+    reportGenerator.setLanguage(null);
   }
 
   @Test
   public void setScriptSuccess() throws Exception {
-    groovyReport.setScript(GOOD_SCRIPT);
+    reportGenerator.setScript(GOOD_SCRIPT);
 
-    assertEquals(GOOD_SCRIPT, groovyReport.getScript());
+    assertEquals(GOOD_SCRIPT, reportGenerator.getScript());
   }
 
   @Test(expected = CompilationFailedException.class)
   public void setScriptFailure() throws Exception {
-    groovyReport.setScript(BAD_SCRIPT);
+    reportGenerator.setScript(BAD_SCRIPT);
   }
 
   @Test
   public void parseScriptSuccess() throws Exception {
-    groovyReport.script = GOOD_SCRIPT;
-    Script result = groovyReport.parseScript();
+    reportGenerator.script = GOOD_SCRIPT;
+    Script result = reportGenerator.parseScript();
 
     assertNotNull("Failed to parse script", result);
   }
 
   @Test(expected = GroovyRuntimeException.class)
   public void parseScriptFailure() throws Exception {
-    groovyReport.script = BAD_SCRIPT;
-    groovyReport.parseScript();
+    reportGenerator.script = BAD_SCRIPT;
+    reportGenerator.parseScript();
   }
 
   @Test
   public void setTemplateSuccess() throws Exception {
-    groovyReport.setTemplate(GOOD_TEMPLATE);
+    reportGenerator.setTemplate(GOOD_TEMPLATE);
 
-    assertEquals(GOOD_TEMPLATE, groovyReport.getTemplate());
+    assertEquals(GOOD_TEMPLATE, reportGenerator.getTemplate());
   }
 
   @Test(expected = GroovyRuntimeException.class)
   public void setTemplateFailure() throws Exception {
-    groovyReport.setTemplate(BAD_TEMPLATE);
+    reportGenerator.setTemplate(BAD_TEMPLATE);
   }
 
   @Test
   public void parseTemplateSuccess() throws Exception {
-    groovyReport.template = GOOD_TEMPLATE;
-    Template result = groovyReport.parseTemplate();
+    reportGenerator.template = GOOD_TEMPLATE;
+    Template result = reportGenerator.parseTemplate();
 
     assertNotNull("Failed to parse template", result);
   }
 
   @Test(expected = GroovyRuntimeException.class)
   public void parseTemplateFailure() throws Exception {
-    groovyReport.template = BAD_TEMPLATE;
-    groovyReport.parseTemplate();
+    reportGenerator.template = BAD_TEMPLATE;
+    reportGenerator.parseTemplate();
   }
 
   @Test
   public void parseBindingsSuccessNoBindings() throws Exception {
-    Binding result = groovyReport.parseBinding();
+    Binding result = reportGenerator.parseBinding();
 
     assertNotNull("Failed to parse variable bindings", result);
   }
@@ -167,8 +174,8 @@ public class GroovyReportTest {
     bindings.put("c", "3");
 
     // Unit under test
-    groovyReport.setBinding(bindings);
-    Binding result = groovyReport.parseBinding();
+    reportGenerator.setBinding(bindings);
+    Binding result = reportGenerator.parseBinding();
 
     // Verify results
     assertNotNull("Failed to parse variable bindings", result);

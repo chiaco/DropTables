@@ -61,8 +61,9 @@ Create a file called report.json:
   "name": "Print Collections",
   "description": "Queries the database and prints a list of collections",
   "author": "r-gerard",
-  "groovyTemplate": "<html><head><title>Collections</title></head><body bgcolor=\"<% print bgColor %>\"><h1>Collections</h1><ul><% print COLLECTIONS %></ul></body></html>",
-  "groovyScript": "// DAO is a global variable with read-only access to Mongo\nCOLLECTIONS = DAO.getCollectionNames().collect { \"<li>\" + it + \"</li>\" }.join(\"\\n\")",
+  "language": "GROOVY",
+  "template": "<html><head><title>Collections</title></head><body bgcolor=\"<% print bgColor %>\"><h1>Collections</h1><ul><% print COLLECTIONS %></ul></body></html>",
+  "script": "// DAO is a global variable with read-only access to Mongo\nCOLLECTIONS = DAO.getCollectionNames().collect { \"<li>\" + it + \"</li>\" }.join(\"\\n\")",
   "defaultParameters": {
     "bgColor": "#FFFFFF"
   }

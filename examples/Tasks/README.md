@@ -97,8 +97,9 @@ curl -X POST -H "Content-Type: application/json" -d "{\"queryStartTime\":\"Oct 3
   "name": "TaskSet Report",
   "description": "Generates descriptive statistics for TaskSet documents found within a specified date range",
   "author": "r-gerard",
-  "groovyTemplate": "// omitted for brevity",
-  "groovyScript": "// omitted for brevity",
+  "language": "GROOVY",
+  "template": "// omitted for brevity",
+  "script": "// omitted for brevity",
   "defaultParameters": {
     "collection": "taskSets",
     "queryStartTime": "Sep 8, 2001",
@@ -107,4 +108,4 @@ curl -X POST -H "Content-Type: application/json" -d "{\"queryStartTime\":\"Oct 3
 }
 ```
 
-Refer to `template.groovy` and `script.groovy` for the content of the groovyTemplate and groovyScript fields.
+Refer to `template.groovy` and `script.groovy` for the content of the template and script fields.

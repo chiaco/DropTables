@@ -51,24 +51,24 @@ import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Key;
 
 import com.callidusrobotics.droptables.model.DocumentDao;
-import com.callidusrobotics.droptables.model.GroovyDao;
-import com.callidusrobotics.droptables.model.GroovyReport;
+import com.callidusrobotics.droptables.model.ReportDao;
+import com.callidusrobotics.droptables.model.ReportGenerator;
 import com.google.common.collect.ImmutableMap;
 import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GroovyResourceTest {
-  GroovyResource resource;
+public class ReportsResourceTest {
+  ReportsResource resource;
 
-  @Mock GroovyDao mockDao;
+  @Mock ReportDao mockDao;
   @Mock Datastore mockDatastore;
   @Mock GroovyScriptEngine mockScriptEngine;
   @Mock ObjectId mockId, mockId2, mockId3;
   @Mock DBObject mockObject, mockObject2, mockObject3;
-  @Mock Key<GroovyReport> mockWriteKey;
+  @Mock Key<ReportGenerator> mockWriteKey;
   @Mock WriteResult mockWriteResult;
-  @Mock GroovyReport mockGroovyReport;
+  @Mock ReportGenerator mockGroovyReport;
   @Mock Script mockScript;
   @Mock Template mockTemplate;
   @Mock Binding mockBinding;
@@ -79,7 +79,7 @@ public class GroovyResourceTest {
 
   @Before
   public void before() throws Exception {
-    resource = new GroovyResource(mockDao, mockDatastore, mockScriptEngine, CACHE_DIR);
+    resource = new ReportsResource(mockDao, mockDatastore, mockScriptEngine, CACHE_DIR);
 
     when(mockObject.get(DocumentDao.DOC_ID)).thenReturn(mockId);
     when(mockObject2.get(DocumentDao.DOC_ID)).thenReturn(mockId2);
