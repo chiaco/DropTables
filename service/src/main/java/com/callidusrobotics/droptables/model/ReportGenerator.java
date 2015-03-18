@@ -129,6 +129,13 @@ public class ReportGenerator {
     return new Date(created.getTime());
   }
 
+  @JsonProperty("dateCreated")
+  public void setCreated(Date created) {
+    if (created != null) {
+      this.created = new Date(created.getTime());
+    }
+  }
+
   @JsonProperty("dateModified")
   public Date getModified() {
     if (modified == null) {
@@ -136,6 +143,13 @@ public class ReportGenerator {
     }
 
     return new Date(modified.getTime());
+  }
+
+  @JsonProperty("dateModified")
+  public void setModified(Date modified) {
+    if (modified != null) {
+      this.modified = new Date(modified.getTime());
+    }
   }
 
   @JsonProperty("name")
