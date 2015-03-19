@@ -34,8 +34,8 @@ import com.callidusrobotics.droptables.model.ReportGenerator;
 import com.callidusrobotics.droptables.model.ReportGeneratorTest;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ReportViewTest {
-  ReportView view;
+public class ReportEditViewTest {
+  ReportEditView view;
   ReportGenerator report;
 
   FreemarkerViewRenderer renderer;
@@ -44,7 +44,7 @@ public class ReportViewTest {
   @Before
   public void before() throws Exception {
     report = ReportGeneratorTest.buildReport();
-    view = new ReportView(report);
+    view = new ReportEditView(report);
     renderer = new FreemarkerViewRenderer();
     writer = new ByteArrayOutputStream();
   }

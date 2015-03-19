@@ -22,10 +22,8 @@ import groovy.lang.GroovyRuntimeException;
 import groovy.text.Template;
 import groovy.util.GroovyScriptEngine;
 import io.dropwizard.setup.Environment;
-import io.dropwizard.views.View;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -51,7 +49,9 @@ import com.callidusrobotics.droptables.exception.HtmlWebApplicationException;
 import com.callidusrobotics.droptables.model.DocumentDao;
 import com.callidusrobotics.droptables.model.ReportDao;
 import com.callidusrobotics.droptables.model.ReportGenerator;
-import com.callidusrobotics.droptables.view.ReportView;
+import com.callidusrobotics.droptables.view.ReportEditView;
+import com.callidusrobotics.droptables.view.ReportExecuteView;
+import com.callidusrobotics.droptables.view.ReportListView;
 import com.google.common.collect.ImmutableMap;
 import com.mongodb.WriteResult;
 
@@ -90,15 +90,16 @@ public class ReportsResource {
     scriptEngine = new GroovyScriptEngine(roots);
   }
 
+  /**
+   * Generates a View listing ReportGenerator objects in the DB.
+   *
+   * @return The View, never null
+   */
+  @Produces({ MediaType.TEXT_HTML, MediaType.APPLICATION_JSON })
   @GET
-  public List<String> list() {
-    List<ObjectId> ids = dao.findIds();
-    List<String> result = new ArrayList<String>(ids.size());
-    for (ObjectId id : ids) {
-      result.add(id.toString());
-    }
-
-    return result;
+  public ReportListView list() {
+    List<ReportGenerator> reportGenerators = dao.find().asList();
+    return new ReportListView(reportGenerators);
   }
 
   @POST
@@ -106,22 +107,70 @@ public class ReportsResource {
     return ImmutableMap.of(DocumentDao.DOC_ID, dao.save(entity).getId().toString());
   }
 
+  /**
+   * Generates a View that allows the user to create a new ReportGenerator.
+   *
+   * @return The View, never null
+   */
+  @Produces(MediaType.TEXT_HTML)
+  @Path("/new/")
+  @GET
+  public ReportEditView create() {
+    return new ReportEditView(new ReportGenerator());
+  }
+
+  /**
+   * Generates a View that allows the user to edit an existing ReportGenerator.
+   *
+   * @param id
+   *          The {@link ReportGenerator} object to fetch from the database and
+   *          execute
+   * @return The View, never null
+   */
   @Produces({ MediaType.TEXT_HTML, MediaType.APPLICATION_JSON })
   @Path("/{id}/")
   @GET
-  public View fetch(@Valid @PathParam("id") ObjectId id) {
+  public ReportEditView fetch(@Valid @PathParam("id") ObjectId id) {
     ReportGenerator reportGenerator = dao.get(id);
     if (reportGenerator == null) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
 
-    return new ReportView(reportGenerator);
+    return new ReportEditView(reportGenerator);
   }
 
+  /**
+   * Deletes the specified ReportGenerator.
+   *
+   * @param id
+   *          The {@link ReportGenerator} object to fetch from the database and
+   *          execute
+   * @return The WriteResult, never null
+   */
   @Path("/{id}/")
   @DELETE
   public WriteResult delete(@Valid @PathParam("id") ObjectId id) {
     return dao.deleteById(id);
+  }
+
+  /**
+   * Generates a View that allows the user to execute the ReportGenerator.
+   *
+   * @param id
+   *          The {@link ReportGenerator} object to fetch from the database and
+   *          execute
+   * @return The View, never null
+   */
+  @Produces(MediaType.TEXT_HTML)
+  @Path("/{id}/results/")
+  @GET
+  public ReportExecuteView execute(@Valid @PathParam("id") ObjectId id) {
+    ReportGenerator reportGenerator = dao.get(id);
+    if (reportGenerator == null) {
+      throw new WebApplicationException(Response.Status.NOT_FOUND);
+    }
+
+    return new ReportExecuteView(reportGenerator);
   }
 
   /**

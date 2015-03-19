@@ -58,6 +58,8 @@ public class ReportGeneratorTest {
     report.name = "Script1";
     report.author = "John Doe";
     report.description = "This is a script for testing serialization";
+    report.binding = new HashMap<String,String>();
+    report.binding.put("foo", "bar");
 
     return report;
   }
@@ -71,7 +73,7 @@ public class ReportGeneratorTest {
   public void toJsonSuccess() throws Exception {
     reportGenerator = buildReport();
 
-    String expectedJson = "{\"id\":{\"date\":1424552411000,\"time\":1424552411000,\"timestamp\":1424552411,\"timeSecond\":1424552411,\"inc\":1182618496,\"machine\":-643220325,\"new\":false},\"dateCreated\":1111111,\"dateModified\":5555555,\"name\":\"Script1\",\"description\":\"This is a script for testing serialization\",\"author\":\"John Doe\",\"language\":\"GROOVY\",\"template\":\"<html><% print [0, 1, 2] %></html>\",\"script\":\"var1 = [0, 1, 2]\\nprint var1\",\"defaultParameters\":{}}";
+    String expectedJson = "{\"id\":{\"date\":1424552411000,\"time\":1424552411000,\"timestamp\":1424552411,\"timeSecond\":1424552411,\"inc\":1182618496,\"machine\":-643220325,\"new\":false},\"dateCreated\":1111111,\"dateModified\":5555555,\"name\":\"Script1\",\"description\":\"This is a script for testing serialization\",\"author\":\"John Doe\",\"language\":\"GROOVY\",\"template\":\"<html><% print [0, 1, 2] %></html>\",\"script\":\"var1 = [0, 1, 2]\\nprint var1\",\"defaultParameters\":{\"foo\":\"bar\"}}";
 
     // Unit under test
     ObjectMapper mapper = new ObjectMapper();

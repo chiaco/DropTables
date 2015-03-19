@@ -32,9 +32,6 @@ import groovy.text.Template;
 import groovy.util.GroovyScriptEngine;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.WebApplicationException;
@@ -101,22 +98,6 @@ public class ReportsResourceTest {
     verifyNoMoreInteractions(mockDatastore);
     verifyNoMoreInteractions(mockScriptEngine);
     verifyNoMoreInteractions(mockGroovyReport);
-  }
-
-  @Test
-  public void listSuccess() throws Exception {
-    List<String> values = Arrays.asList(mockId.toString(), mockId2.toString(), mockId3.toString());
-    when(mockDao.findIds()).thenReturn(Arrays.asList(mockId, mockId2, mockId3));
-
-    // Unit under test
-    List<String> result = resource.list();
-
-    // Verify results
-    verify(mockDao).findIds();
-
-    Collections.sort(values);
-    Collections.sort(result);
-    assertEquals(values, result);
   }
 
   @Test
