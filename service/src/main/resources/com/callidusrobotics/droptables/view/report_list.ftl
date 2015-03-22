@@ -1,19 +1,12 @@
 <#-- @ftlvariable name="" type="com.callidusrobotics.droptables.model.ReportGenerator" -->
+<!DOCTYPE html> 
 <html>
   <head>
-    <title>Report Generators</title>
-    <style>
-      table {
-        width: 100%;
-      }
-
-      table, th, td {
-        border: 1px solid black;
-        border-collapse: collapse;
-      }
-    </style>
+    <#include "head.ftl">
   </head>
   <body>
+    <#include "navbar.ftl">
+    
     <h1><a href="/reports/new">Create New Report</a></h1><br>
     <#if reports?has_content>
     <table>

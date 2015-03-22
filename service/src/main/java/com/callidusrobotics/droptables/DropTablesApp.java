@@ -18,6 +18,7 @@
 package com.callidusrobotics.droptables;
 
 import io.dropwizard.Application;
+import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.dropwizard.views.ViewBundle;
@@ -54,6 +55,7 @@ public class DropTablesApp extends Application<DropTablesConfig> {
         return ImmutableMap.of(".ftl", ImmutableMap.of("strict_syntax", "yes", "whitespace_stripping", "yes"));
       }
     });
+    bootstrap.addBundle(new AssetsBundle("/assets/css", "/css", null, "css"));
   }
 
   @Override
@@ -73,5 +75,7 @@ public class DropTablesApp extends Application<DropTablesConfig> {
     // Resources
     environment.jersey().register(new DocumentsResource(config, environment));
     environment.jersey().register(new ReportsResource(config, environment));
+    
+    //environment.jersey().setUrlPattern("/css/*");
   }
 }
