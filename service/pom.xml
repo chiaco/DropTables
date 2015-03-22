@@ -3,7 +3,7 @@
   <parent>
     <groupId>com.callidusrobotics.droptables</groupId>
     <artifactId>droptables-project</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
   </parent>
   <artifactId>droptables-service</artifactId>
   <packaging>jar</packaging>
@@ -107,10 +107,8 @@
             </goals>
             <configuration>
               <transformers>
-                <transformer
-                  implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-                <transformer
-                  implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                   <mainClass>${project.mainClass}</mainClass>
                 </transformer>
               </transformers>
