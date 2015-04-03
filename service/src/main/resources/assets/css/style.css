@@ -113,13 +113,34 @@ body {
 
 .container {
   margin: 0 auto;
-  width: 540px;
+  width: calc(100% - 40);
 }
 
 header {
-  padding-top: 100px;
-  background: #3d4144 url("../img/bg.png") 0 0 repeat;
+  background: #3d4144;
   border-bottom: 5px solid #ddd;
+}
+
+footer {
+  background: #3d4144;
+  border-bottom: 5px solid #ddd;
+  color: #ddd;
+  text-decoration: none;
+  text-shadow: 0 -1px #2e3131;
+}
+
+.headerTitle {
+  color: #ddd;
+  text-decoration: none;
+  text-shadow: 0 -1px #2e3131;
+/*   font-size:30pt; */
+}
+.headerTitle h1{
+  color: #ddd;
+  text-decoration: none;
+  text-shadow: 0 -1px #2e3131;
+  font-size:30pt;
+  line-height:40pt;
 }
 
 nav {
@@ -197,4 +218,72 @@ nav li.purple a, nav li.purple a:active {
 }
 nav li.yellow a, nav li.yellow a:active {
   border-bottom-color: #c0bb30;
+}
+
+
+
+
+
+
+h1 {
+  font-family: Helvetica;
+  font-weight: 100;
+}
+body {
+  color:#333;
+  text-align:center;
+  font-family: arial;
+}
+
+.nav {
+	margin: 0px;
+	padding: 0px;
+	list-style: none;
+}
+
+.nav li {
+	float: left;
+	width: 160px;
+	position: relative;
+}
+
+.nav li a {
+	background: #333;
+	color: #fff;
+	display: block;
+	padding: 7px 8px;
+	text-decoration: none;
+	border-top: 1px solid #069;
+}
+
+.nav li a:hover {
+	color: #069;
+}
+
+/*=== submenu ===*/
+
+.nav ul {
+	display: none;
+	position: absolute;
+	margin-left: 0px;
+	list-style: none;
+	padding: 0px;
+}
+
+.nav ul li {
+	width: 160px;
+	float: left;
+}
+
+.nav ul a {
+	display: block;
+	height: 15px;
+	padding: 7px 8px;
+	color: #fff;
+	text-decoration: none;
+	border-bottom: 1px solid #222;
+}
+
+.nav ul li a:hover {
+	color: #069;
 }

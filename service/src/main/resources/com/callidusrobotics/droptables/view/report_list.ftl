@@ -5,7 +5,11 @@
     <#include "head.ftl">
   </head>
   <body>
-    <#include "navbar.ftl">
+    <div class="wrapper">
+    <header>
+       <div class="headerTitle"><h1>DropTables</h1>Dropping tomorrow's reports, today!</div>
+       <#include "navbar.ftl">
+    </header>
     
     <h1><a href="/reports/new">Create New Report</a></h1><br>
     <#if reports?has_content>
@@ -27,6 +31,46 @@
       </tr>
       </#list>
     </table>
-    </#if>
+    </#if>    
+    </div>
+
+
+    <br><br><br><br>
+    
+    
+    
+    <div class="navigation">
+  		<ul class="nav">
+  			<li>
+  				<a href="#">Home</a>
+  			</li>
+  			<li>
+  				<a href="#">Services</a>
+  				<ul>
+  					<li><a href="#">Consulting</a></li>
+  					<li><a href="#">Sales</a></li>
+  					<li><a href="#">Support</a></li>
+  				</ul>
+  			</li>
+  			<li>
+  				<a href="#">About Us</a>
+  				<ul>
+  					<li><a href="#">Company</a></li>
+  					<li><a href="#">Mission</a></li>
+  					<li><a href="#">Contact Information</a></li>
+  				</ul>
+  			</li>
+  		</ul>
+  	</div>
+  	
+  	
+  	
+  	
+  	<br><br><br><br>
+  	
+  	
+    <footer>
+      <#include "footer.ftl">
+    </footer>
   </body>
 </html>

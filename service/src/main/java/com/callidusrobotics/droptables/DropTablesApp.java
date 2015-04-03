@@ -19,12 +19,18 @@ package com.callidusrobotics.droptables;
 
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
+import io.dropwizard.auth.AuthFactory;
+import io.dropwizard.auth.basic.BasicAuthFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.dropwizard.views.ViewBundle;
 
 import java.io.IOException;
 
+import com.callidusrobotics.droptables.auth.GreetingAuthenticator;
+import com.callidusrobotics.droptables.auth.SecuredHelloResource;
+import com.callidusrobotics.droptables.auth.SimpleUnauthorizedHandler;
+import com.callidusrobotics.droptables.auth.User;
 import com.callidusrobotics.droptables.configuration.DropTablesConfig;
 import com.callidusrobotics.droptables.exception.HtmlBodyErrorWriter;
 import com.callidusrobotics.droptables.health.FileSystemHealthCheck;
@@ -75,6 +81,15 @@ public class DropTablesApp extends Application<DropTablesConfig> {
     // Resources
     environment.jersey().register(new DocumentsResource(config, environment));
     environment.jersey().register(new ReportsResource(config, environment));
+    environment.jersey().register(new SecuredHelloResource(config, environment));
+
+    // Auth stuff
+    GreetingAuthenticator greetingAuthenticator = new GreetingAuthenticator(config.getLogin(), config.getPassword());
+    BasicAuthFactory<User> authFactory = new BasicAuthFactory<>(greetingAuthenticator, "DropTablesAuthTest", User.class);
+    SimpleUnauthorizedHandler unauthorizedHandler = new SimpleUnauthorizedHandler();
+    authFactory.responseBuilder(unauthorizedHandler);
+    environment.jersey().register(AuthFactory.binder(authFactory));
+
     
     //environment.jersey().setUrlPattern("/css/*");
   }

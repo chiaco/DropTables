@@ -1,0 +1,46 @@
+{
+  "scriptsCacheDir": "/tmp/droptables/groovy/",
+  "prettyPrint": true,
+  "login": "chiaco",
+  "password": "crimson",
+  "mongo": {
+    "dbName": "test",
+    "host": "localhost",
+    "port": 27017,
+    "serviceUser": {
+      "username": "serviceUser",
+      "password": "password"
+    },
+    "reportsUser": {
+      "username": "reportsUser",
+      "password": "password"
+    }
+  },
+  "server": {
+    "applicationConnectors": [
+      {
+        "type": "http",
+        "port" : 9000
+      }
+    ],
+    "adminConnectors": [
+      {
+        "type": "http",
+        "port": 9001
+      }
+    ]
+  },
+  "logging": {
+    "appenders": [
+      {
+        "type": "console"
+      }
+    ],
+    "level": "INFO",
+    "loggers": {
+      "com": {
+        "callidusrobotics": "DEBUG"
+      }
+    }
+  }
+}

@@ -82,4 +82,22 @@ public class DropTablesConfig extends Configuration {
   public MongoFactory getMongoFactory() {
     return mongoFactory;
   }
+  
+  
+  // New Auth test garbage
+  @NotNull
+  private String login;
+  
+  @NotNull
+  private String password;
+
+  @JsonProperty
+  public String getLogin() {
+      return login;
+  }
+
+  @JsonProperty
+  public String getPassword() {
+      return password;
+  }
 }

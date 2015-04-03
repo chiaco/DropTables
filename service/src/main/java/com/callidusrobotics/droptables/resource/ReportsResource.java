@@ -21,6 +21,7 @@ import groovy.lang.Binding;
 import groovy.lang.GroovyRuntimeException;
 import groovy.text.Template;
 import groovy.util.GroovyScriptEngine;
+import io.dropwizard.auth.Auth;
 import io.dropwizard.setup.Environment;
 
 import java.io.IOException;
@@ -36,11 +37,13 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.bson.types.ObjectId;
+import org.eclipse.jetty.server.Authentication.User;
 import org.mongodb.morphia.Datastore;
 
 import com.callidusrobotics.droptables.configuration.DropTablesConfig;
@@ -52,6 +55,7 @@ import com.callidusrobotics.droptables.model.ReportGenerator;
 import com.callidusrobotics.droptables.view.ReportEditView;
 import com.callidusrobotics.droptables.view.ReportExecuteView;
 import com.callidusrobotics.droptables.view.ReportListView;
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.mongodb.WriteResult;
 
